@@ -20,7 +20,7 @@ This package is currently in development on GitHub. You can install it
 using the `install_github` function from the `devtools` package using:
 
 ``` r
-devtools::install_github("geanders/stormwindmodel", build_vignettes = TRUE)
+devtools::install_github("ryanzomorrodi/stormwindmodel", build_vignettes = TRUE)
 ```
 
 ## Package example data
@@ -136,7 +136,7 @@ floyd_winds %>%
 #> 6 01011       4.09      2.74        0        0
 ```
 
-If you use the `coutny_points` data that comes with the package for the
+If you use the `county_points` data that comes with the package for the
 `grid_df` argument, you will model winds for county centers. In this
 case, the `gridid` is a county FIPS, and the `stormwindmodel` package
 has a function called `map_wind` for mapping the estimated winds for
@@ -235,10 +235,10 @@ ggplot() +
 
 ![](man/figures/README-unnamed-chunk-10-1.png)<!-- -->
 
-Since the `new_orleans_tract_centers` is now in the appropriate format
-to use with the `stormwindmodel` functions, you can input it directly
-into `get_grid_winds` to model the winds from Hurricane Katrina at each
-census tract center:
+Since the `new_orleans_tract_centers` is a `sf` object, we will need to
+format it for use with the `stormwindmodel` functions. After it has been
+formatted, you can input it directly into `get_grid_winds` to model the
+winds from Hurricane Katrina at each census tract center:
 
 ``` r
 new_orleans_centers <- bind_cols(

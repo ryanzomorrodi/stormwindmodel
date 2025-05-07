@@ -4,100 +4,66 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Model Tropical Cyclone Wind Speeds • stormwindmodel</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
-<script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script><meta property="og:title" content="Model Tropical Cyclone Wind Speeds">
+<script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Model Tropical Cyclone Wind Speeds">
+<meta name="description" content="Allows users to input tracking data for a hurricane or other tropical storm, along with a data frame of grid points at which to model wind speeds. Functions in this package will then calculate wind speeds at each point based on wind model equations. This modeling framework is currently set up to model winds for North American locations with Atlantic basin storms. This work was supported in part by grants from the National Institute of Environmental Health Sciences (R00ES022631), the National Science Foundation (1331399 and 1940141), and the Department of Energy (DE-FG02-08ER64644).">
 <meta property="og:description" content="Allows users to input tracking data for a hurricane or other tropical storm, along with a data frame of grid points at which to model wind speeds. Functions in this package will then calculate wind speeds at each point based on wind model equations. This modeling framework is currently set up to model winds for North American locations with Atlantic basin storms. This work was supported in part by grants from the National Institute of Environmental Health Sciences (R00ES022631), the National Science Foundation (1331399 and 1940141), and the Department of Energy (DE-FG02-08ER64644).">
-<!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]-->
 </head>
-<body data-spy="scroll" data-target="#toc">
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
-    <div class="container template-home">
-      <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
-  <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <span class="navbar-brand">
-        <a class="navbar-link" href="index.html">stormwindmodel</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.5.9</span>
-      </span>
-    </div>
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
 
-    <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav">
-<li>
-  <a href="reference/index.html">Reference</a>
-</li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Articles
+    <a class="navbar-brand me-2" href="index.html">stormwindmodel</a>
 
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-<li>
-      <a href="articles/Details.html">Details of `stormwindmodel` package</a>
-    </li>
-    <li>
-      <a href="articles/modeling_outside_us.html">Modeling storm winds outside the United States</a>
-    </li>
-    <li>
-      <a href="articles/Overview.html">Using the `stormwindmodel` package</a>
-    </li>
-    <li>
-      <a href="articles/single_location.html">Modeling windspeed and direction at a single location</a>
-    </li>
-    <li>
-      <a href="articles/timepoints.html">Extracting snapshots of the wind field at different times</a>
-    </li>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.5.9</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><a class="dropdown-item" href="articles/Details.html">Details of `stormwindmodel` package</a></li>
+    <li><a class="dropdown-item" href="articles/modeling_outside_us.html">Modeling storm winds outside the United States</a></li>
+    <li><a class="dropdown-item" href="articles/Overview.html">Using the `stormwindmodel` package</a></li>
+    <li><a class="dropdown-item" href="articles/single_location.html">Modeling windspeed and direction at a single location</a></li>
+    <li><a class="dropdown-item" href="articles/timepoints.html">Extracting snapshots of the wind field at different times</a></li>
   </ul>
 </li>
-<li>
-  <a href="news/index.html">Changelog</a>
-</li>
+<li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
       </ul>
-<ul class="nav navbar-nav navbar-right">
-<li>
-  <a href="https://github.com/geanders/stormwindmodel/" class="external-link">
-    <span class="fab fa-github fa-lg"></span>
-
-  </a>
-</li>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/geanders/stormwindmodel/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
-<!--/.nav-collapse -->
+
+
   </div>
-<!--/.container -->
-</div>
-<!--/.navbar -->
-
-
-
-      </header><div class="row">
-  <div class="contents col-md-9">
-
-
+</nav><div class="container template-home">
+<div class="row">
+  <main id="main" class="col-md-9">
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
 <p>The <code>stormwindmodel</code> package was created to allow users to model wind speeds at grid points in the United States based on “best tracks” hurricane tracking data, using a model for wind speed developed by Willoughby and coauthors (2006). The package includes functions for interpolating hurricane tracks and for modeling and mapping wind speeds during the storm. It includes population mean center locations for all U.S. counties, which can be used to map winds by county; however, other grid point locations can also be input for modeling. Full details on how this model is fit are provided in the “Details” vignette of the <code>stormwindmodel</code> package.</p>
 <p>This package is currently in development on GitHub. You can install it using the <code>install_github</code> function from the <code>devtools</code> package using:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"geanders/stormwindmodel"</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"ryanzomorrodi/stormwindmodel"</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="package-example-data">Package example data<a class="anchor" aria-label="anchor" href="#package-example-data"></a>
@@ -180,7 +146,7 @@
 <span><span class="co">#&gt; 4 01007       2.32      1.56        0        0</span></span>
 <span><span class="co">#&gt; 5 01009       2.61      1.75        0        0</span></span>
 <span><span class="co">#&gt; 6 01011       4.09      2.74        0        0</span></span></code></pre></div>
-<p>If you use the <code>coutny_points</code> data that comes with the package for the <code>grid_df</code> argument, you will model winds for county centers. In this case, the <code>gridid</code> is a county FIPS, and the <code>stormwindmodel</code> package has a function called <code>map_wind</code> for mapping the estimated winds for each county. By default, it maps the maximum sustained wind in each county during the storm in meters per second.</p>
+<p>If you use the <code>county_points</code> data that comes with the package for the <code>grid_df</code> argument, you will model winds for county centers. In this case, the <code>gridid</code> is a county FIPS, and the <code>stormwindmodel</code> package has a function called <code>map_wind</code> for mapping the estimated winds for each county. By default, it maps the maximum sustained wind in each county during the storm in meters per second.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/map_wind.html">map_wind</a></span><span class="op">(</span><span class="va">floyd_winds</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-7-1.png"><!-- --></p>
@@ -254,20 +220,15 @@
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">new_orleans</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">new_orleans_tract_centers</span>, color <span class="op">=</span> <span class="st">"red"</span>, size <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-10-1.png"><!-- --></p>
-<p>Since the <code>new_orleans_tract_centers</code> is now in the appropriate format to use with the <code>stormwindmodel</code> functions, you can input it directly into <code>get_grid_winds</code> to model the winds from Hurricane Katrina at each census tract center:</p>
+<p>Since the <code>new_orleans_tract_centers</code> is a <code>sf</code> object, we will need to format it for use with the <code>stormwindmodel</code> functions. After it has been formatted, you can input it directly into <code>get_grid_winds</code> to model the winds from Hurricane Katrina at each census tract center:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">new_orleans_centers</span> <span class="op">&lt;-</span> <span class="fu">bind_cols</span><span class="op">(</span></span>
 <span>  <span class="va">new_orleans_tract_centers</span>, </span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html" class="external-link">st_coordinates</a></span><span class="op">(</span><span class="va">new_orleans_tract_centers</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">new_orleans_centers</span> <span class="op">&lt;-</span> <span class="va">new_orleans_centers</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TRACTCE"</span>, <span class="st">"X"</span>, <span class="st">"Y"</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="va">new_orleans_centers</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_drop_geometry</a></span><span class="op">(</span><span class="va">new_orleans_centers</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">new_orleans_centers</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gridid"</span>, <span class="st">"glon"</span>, <span class="st">"glat"</span><span class="op">)</span></span>
-<span><span class="va">new_orleans_centers</span><span class="op">$</span><span class="va">glandsea</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mapply.html" class="external-link">mapply</a></span><span class="op">(</span></span>
-<span>  <span class="va">check_over_land</span>,</span>
-<span>  <span class="va">new_orleans_centers</span><span class="op">$</span><span class="va">glat</span>,</span>
-<span>  <span class="va">new_orleans_centers</span><span class="op">$</span><span class="va">glon</span></span>
-<span><span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu">select</span><span class="op">(</span>gridid <span class="op">=</span> <span class="va">TRACTCE</span>, glon <span class="op">=</span> <span class="va">X</span>, glat <span class="op">=</span> <span class="va">Y</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>glandsea <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mapply.html" class="external-link">mapply</a></span><span class="op">(</span><span class="va">check_over_land</span>, <span class="va">glat</span>, <span class="va">glon</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_drop_geometry</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">new_orleans_tracts_katrina</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_grid_winds.html">get_grid_winds</a></span><span class="op">(</span>hurr_track <span class="op">=</span> <span class="va">katrina_tracks</span>, </span>
 <span>                                             grid_df <span class="op">=</span> <span class="va">new_orleans_centers</span><span class="op">)</span></span>
@@ -516,10 +477,7 @@ Willoughby, HE, RWR Darling, and ME Rahn. 2006. “Parametric Representation of 
 </div>
 </div>
 
-  </div>
-
-  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-    <div class="links">
+  </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
 <li><a href="https://cloud.r-project.org/package=stormwindmodel" class="external-link">View on CRAN</a></li>
@@ -546,7 +504,8 @@ Willoughby, HE, RWR Darling, and ME Rahn. 2006. “Parametric Representation of 
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Brooke Anderson <br><small class="roles"> Author, maintainer </small>   </li>
+<li>Ryan Zomorrodi <br><small class="roles"> Author, maintainer </small>   </li>
+<li>Brooke Anderson <br><small class="roles"> Author </small>   </li>
 <li>Andrea Schumacher <br><small class="roles"> Author </small>   </li>
 <li>Seth Guikema <br><small class="roles"> Author </small>   </li>
 <li>Steven Quiring <br><small class="roles"> Author </small>   </li>
@@ -564,23 +523,20 @@ Willoughby, HE, RWR Darling, and ME Rahn. 2006. “Parametric Representation of 
 </ul>
 </div>
 
-  </div>
+  </aside>
 </div>
 
 
-      <footer><div class="copyright">
-  <p></p>
-<p>Developed by Brooke Anderson, Andrea Schumacher, Seth Guikema, Steven Quiring, Joshua Ferreri, Elizabeth Tennant, Jordan Robinson.</p>
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by Ryan Zomorrodi, Brooke Anderson, Andrea Schumacher, Seth Guikema, Steven Quiring, Joshua Ferreri, Elizabeth Tennant, Jordan Robinson.</p>
 </div>
 
-<div class="pkgdown">
-  <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
 </div>
 
-      </footer>
+    </footer>
 </div>
-
 
 
 

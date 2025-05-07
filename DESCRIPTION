@@ -5,9 +5,12 @@ Version: 0.1.5.9
 Date: 2021-05-17
 Encoding: UTF-8
 Language: en-US
-Authors@R: c(person("Brooke", "Anderson", 
-                    email = "brooke.anderson@colostate.edu",
+Authors@R: c(person("Ryan", "Zomorrodi", 
+                    email = "rzomor2@uic.edu",
                     role = c("aut", "cre")),
+             person("Brooke", "Anderson", 
+                    email = "brooke.anderson@colostate.edu",
+                    role = c("aut")),
              person("Andrea", "Schumacher",
                     email = "andrea.schumacher@colostate.edu",
                     role = c("aut")),
