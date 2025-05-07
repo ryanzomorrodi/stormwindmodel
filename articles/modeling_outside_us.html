@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">stormwindmodel</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.5.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.5.11</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -106,7 +106,7 @@ latitude, focusing on an area affected by Typhoon Saomai in 2006:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/rnaturalearth/" class="external-link">rnaturalearth</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">all_countries</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://docs.ropensci.org/rnaturalearth/reference/ne_countries.html" class="external-link">ne_countries</a></span><span class="op">(</span>scale <span class="op">=</span> <span class="st">"medium"</span>, </span>
 <span>                                  returnclass <span class="op">=</span> <span class="st">"sf"</span><span class="op">)</span></span>
@@ -136,11 +136,13 @@ either be squares (<code>square = TRUE</code>) or hexagons
 map showing both these layers, with transparency for the fill in the
 polygons (<code>alpha = 0.4</code>) so you can see all layers:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span></span>
 <span><span class="va">grid_near_landfall</span> <span class="op">&lt;-</span> <span class="va">near_landfall</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_make_grid.html" class="external-link">st_make_grid</a></span><span class="op">(</span>what <span class="op">=</span> <span class="st">"polygons"</span>, square <span class="op">=</span> <span class="cn">FALSE</span>, cellsize <span class="op">=</span> <span class="fl">0.25</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sf.html" class="external-link">st_sf</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>gridid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
 <span><span class="va">points_near_landfall</span> <span class="op">&lt;-</span> <span class="va">near_landfall</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_make_grid.html" class="external-link">st_make_grid</a></span><span class="op">(</span>what <span class="op">=</span> <span class="st">"centers"</span>, square <span class="op">=</span> <span class="cn">FALSE</span>, cellsize <span class="op">=</span> <span class="fl">0.25</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sf.html" class="external-link">st_sf</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
@@ -251,14 +253,14 @@ function using the dataset of grid points that you created as the
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">grid_winds</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 6</span></span></span>
-<span><span class="co">#&gt;   gridid date_time_max_wind  vmax_sust vmax_gust sust_dur gust_dur</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 1      2006-08-11 <span style="color: #949494;">19:15:00</span>     0.240     0.357        0        0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 2      2006-08-11 <span style="color: #949494;">19:30:00</span>     0.272     0.405        0        0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 3      2006-08-11 <span style="color: #949494;">19:30:00</span>     0.309     0.460        0        0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 4      2006-08-11 <span style="color: #949494;">19:30:00</span>     0.350     0.521        0        0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 5      2006-08-11 <span style="color: #949494;">19:30:00</span>     0.396     0.590        0        0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 6      2006-08-11 <span style="color: #949494;">19:30:00</span>     0.447     0.667        0        0</span></span></code></pre></div>
+<span><span class="co">#&gt;   gridid date_time_max_wind vmax_sust vmax_gust sust_dur gust_dur</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 1      <span style="color: #BB0000;">NA</span>                     0.240     0.357        0        0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 2      <span style="color: #BB0000;">NA</span>                     0.272     0.405        0        0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 3      <span style="color: #BB0000;">NA</span>                     0.309     0.460        0        0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 4      <span style="color: #BB0000;">NA</span>                     0.350     0.521        0        0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 5      <span style="color: #BB0000;">NA</span>                     0.396     0.590        0        0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 6      <span style="color: #BB0000;">NA</span>                     0.447     0.667        0        0</span></span></code></pre></div>
 <p>The output will have a row for every grid point, where the grid point
 IDs match those from the grid point dataset you created (you can use
 this ID to link the data back to the spatial data object, for example,
@@ -294,13 +296,13 @@ easy to map:</p>
 <span><span class="co">#&gt; Dimension:     XY</span></span>
 <span><span class="co">#&gt; Bounding box:  xmin: 106.75 ymin: 17.79669 xmax: 107 ymax: 20.25043</span></span>
 <span><span class="co">#&gt; Geodetic CRS:  WGS 84</span></span>
-<span><span class="co">#&gt;   gridid  date_time_max_wind vmax_sust vmax_gust sust_dur gust_dur</span></span>
-<span><span class="co">#&gt; 1      1 2006-08-11 19:15:00 0.2395313 0.3569016        0        0</span></span>
-<span><span class="co">#&gt; 2      2 2006-08-11 19:30:00 0.2719318 0.4051784        0        0</span></span>
-<span><span class="co">#&gt; 3      3 2006-08-11 19:30:00 0.3085442 0.4597309        0        0</span></span>
-<span><span class="co">#&gt; 4      4 2006-08-11 19:30:00 0.3497092 0.5210667        0        0</span></span>
-<span><span class="co">#&gt; 5      5 2006-08-11 19:30:00 0.3958561 0.5898256        0        0</span></span>
-<span><span class="co">#&gt; 6      6 2006-08-11 19:30:00 0.4474243 0.6666621        0        0</span></span>
+<span><span class="co">#&gt;   gridid date_time_max_wind vmax_sust vmax_gust sust_dur gust_dur</span></span>
+<span><span class="co">#&gt; 1      1               &lt;NA&gt; 0.2395313 0.3569016        0        0</span></span>
+<span><span class="co">#&gt; 2      2               &lt;NA&gt; 0.2719318 0.4051784        0        0</span></span>
+<span><span class="co">#&gt; 3      3               &lt;NA&gt; 0.3085442 0.4597309        0        0</span></span>
+<span><span class="co">#&gt; 4      4               &lt;NA&gt; 0.3497092 0.5210667        0        0</span></span>
+<span><span class="co">#&gt; 5      5               &lt;NA&gt; 0.3958561 0.5898256        0        0</span></span>
+<span><span class="co">#&gt; 6      6               &lt;NA&gt; 0.4474243 0.6666621        0        0</span></span>
 <span><span class="co">#&gt;                         geometry</span></span>
 <span><span class="co">#&gt; 1 POLYGON ((106.875 17.79669,...</span></span>
 <span><span class="co">#&gt; 2 POLYGON ((106.875 18.2297, ...</span></span>
@@ -310,6 +312,7 @@ easy to map:</p>
 <span><span class="co">#&gt; 6 POLYGON ((106.875 19.96175,...</span></span></code></pre></div>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://sjmgarnier.github.io/viridis/" class="external-link">viridis</a></span><span class="op">)</span></span>
+<span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">modeled_near_landfall</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">vmax_sust</span>, fill <span class="op">=</span> <span class="va">vmax_sust</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">all_countries</span>, fill <span class="op">=</span> <span class="cn">NA</span>, color <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span> <span class="op">+</span> </span>
@@ -377,8 +380,7 @@ points.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"mangkhut_tracks"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">all_countries</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://docs.ropensci.org/rnaturalearth/reference/ne_countries.html" class="external-link">ne_countries</a></span><span class="op">(</span>scale <span class="op">=</span> <span class="st">"medium"</span>, </span>
-<span>                                  returnclass <span class="op">=</span> <span class="st">"sf"</span><span class="op">)</span></span>
+<span><span class="va">all_countries</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://docs.ropensci.org/rnaturalearth/reference/ne_countries.html" class="external-link">ne_countries</a></span><span class="op">(</span>scale <span class="op">=</span> <span class="st">"medium"</span><span class="op">)</span></span>
 <span><span class="va">near_landfall</span> <span class="op">&lt;-</span> <span class="va">all_countries</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/valid.html" class="external-link">st_make_valid</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crop.html" class="external-link">st_crop</a></span><span class="op">(</span>y <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_bbox.html" class="external-link">st_bbox</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>xmin <span class="op">=</span> <span class="fl">110</span>, xmax <span class="op">=</span> <span class="fl">117</span>, ymin <span class="op">=</span> <span class="fl">19</span>, ymax <span class="op">=</span> <span class="fl">25</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
@@ -457,7 +459,7 @@ the <code>glandsea</code> column.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Brooke Anderson, Andrea Schumacher, Seth Guikema, Steven Quiring, Joshua Ferreri, Elizabeth Tennant, Jordan Robinson.</p>
+  <p>Developed by Ryan Zomorrodi, Brooke Anderson, Andrea Schumacher, Seth Guikema, Steven Quiring, Joshua Ferreri, Elizabeth Tennant, Jordan Robinson.</p>
 </div>
 
 <div class="pkgdown-footer-right">

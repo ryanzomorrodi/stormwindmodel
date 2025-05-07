@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">stormwindmodel</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.5.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.5.11</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,7 +63,7 @@
 <p>The <code>stormwindmodel</code> package was created to allow users to model wind speeds at grid points in the United States based on “best tracks” hurricane tracking data, using a model for wind speed developed by Willoughby and coauthors (2006). The package includes functions for interpolating hurricane tracks and for modeling and mapping wind speeds during the storm. It includes population mean center locations for all U.S. counties, which can be used to map winds by county; however, other grid point locations can also be input for modeling. Full details on how this model is fit are provided in the “Details” vignette of the <code>stormwindmodel</code> package.</p>
 <p>This package is currently in development on GitHub. You can install it using the <code>install_github</code> function from the <code>devtools</code> package using:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"geanders/stormwindmodel"</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"ryanzomorrodi/stormwindmodel"</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="package-example-data">Package example data<a class="anchor" aria-label="anchor" href="#package-example-data"></a>
@@ -71,6 +71,7 @@
 <p>For examples, the package includes data on the tracks of Hurricane Floyd in 1999 and Hurricane Katrina in 2005. You can load these example best tracks data sets using:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/geanders/stormwindmodel" class="external-link">stormwindmodel</a></span><span class="op">)</span></span>
+<span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"floyd_tracks"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">floyd_tracks</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 6 × 4</span></span>
@@ -132,11 +133,23 @@
 </ul>
 <p>To get modeled winds for Hurricane Floyd at U.S. county centers, you can run:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">floyd_winds</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_grid_winds.html">get_grid_winds</a></span><span class="op">(</span>hurr_track <span class="op">=</span> <span class="va">floyd_tracks</span>,</span>
-<span>                              grid_df <span class="op">=</span> <span class="va">county_points</span><span class="op">)</span></span>
-<span><span class="va">floyd_winds</span> <span class="op">%&gt;%</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">gridid</span>, <span class="va">vmax_gust</span>, <span class="va">vmax_sust</span>, <span class="va">gust_dur</span>, <span class="va">sust_dur</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
-<span>  <span class="fu">slice</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Attaching package: 'dplyr'</span></span>
+<span><span class="co">#&gt; The following objects are masked from 'package:stats':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     filter, lag</span></span>
+<span><span class="co">#&gt; The following objects are masked from 'package:base':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span>
+<span></span>
+<span><span class="va">floyd_winds</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_grid_winds.html">get_grid_winds</a></span><span class="op">(</span></span>
+<span>  hurr_track <span class="op">=</span> <span class="va">floyd_tracks</span>,</span>
+<span>  grid_df <span class="op">=</span> <span class="va">county_points</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">floyd_winds</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">gridid</span>, <span class="va">vmax_gust</span>, <span class="va">vmax_sust</span>, <span class="va">gust_dur</span>, <span class="va">sust_dur</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 6 × 5</span></span>
 <span><span class="co">#&gt;   gridid vmax_gust vmax_sust gust_dur sust_dur</span></span>
 <span><span class="co">#&gt;   &lt;chr&gt;      &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;</span></span>
@@ -146,10 +159,10 @@
 <span><span class="co">#&gt; 4 01007       2.32      1.56        0        0</span></span>
 <span><span class="co">#&gt; 5 01009       2.61      1.75        0        0</span></span>
 <span><span class="co">#&gt; 6 01011       4.09      2.74        0        0</span></span></code></pre></div>
-<p>If you use the <code>coutny_points</code> data that comes with the package for the <code>grid_df</code> argument, you will model winds for county centers. In this case, the <code>gridid</code> is a county FIPS, and the <code>stormwindmodel</code> package has a function called <code>map_wind</code> for mapping the estimated winds for each county. By default, it maps the maximum sustained wind in each county during the storm in meters per second.</p>
+<p>If you use the <code>county_points</code> data that comes with the package for the <code>grid_df</code> argument, you will model winds for county centers. In this case, the <code>gridid</code> is a county FIPS, and the <code>stormwindmodel</code> package has a function called <code>map_wind</code> for mapping the estimated winds for each county. By default, it maps the maximum sustained wind in each county during the storm in meters per second.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/map_wind.html">map_wind</a></span><span class="op">(</span><span class="va">floyd_winds</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-7-1.png"><!-- --></p>
+<p><img src="reference/figures/README-unnamed-chunk-6-1.png"><!-- --></p>
 </div>
 <div class="section level2">
 <h2 id="further-functionality">Further functionality<a class="anchor" aria-label="anchor" href="#further-functionality"></a>
@@ -219,33 +232,35 @@
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">new_orleans</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">new_orleans_tract_centers</span>, color <span class="op">=</span> <span class="st">"red"</span>, size <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-10-1.png"><!-- --></p>
-<p>Since the <code>new_orleans_tract_centers</code> is now in the appropriate format to use with the <code>stormwindmodel</code> functions, you can input it directly into <code>get_grid_winds</code> to model the winds from Hurricane Katrina at each census tract center:</p>
+<p><img src="reference/figures/README-unnamed-chunk-9-1.png"><!-- --></p>
+<p>Since the <code>new_orleans_tract_centers</code> is a <code>sf</code> object, we will need to format it for use with the <code>stormwindmodel</code> functions. After it has been formatted, you can input it directly into <code>get_grid_winds</code> to model the winds from Hurricane Katrina at each census tract center:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">new_orleans_centers</span> <span class="op">&lt;-</span> <span class="fu">bind_cols</span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">new_orleans_centers</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_cols.html" class="external-link">bind_cols</a></span><span class="op">(</span></span>
 <span>  <span class="va">new_orleans_tract_centers</span>, </span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html" class="external-link">st_coordinates</a></span><span class="op">(</span><span class="va">new_orleans_tract_centers</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu">select</span><span class="op">(</span>gridid <span class="op">=</span> <span class="va">TRACTCE</span>, glon <span class="op">=</span> <span class="va">X</span>, glat <span class="op">=</span> <span class="va">Y</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu">mutate</span><span class="op">(</span>glandsea <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mapply.html" class="external-link">mapply</a></span><span class="op">(</span><span class="va">check_over_land</span>, <span class="va">glat</span>, <span class="va">glon</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span>gridid <span class="op">=</span> <span class="va">TRACTCE</span>, glon <span class="op">=</span> <span class="va">X</span>, glat <span class="op">=</span> <span class="va">Y</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>glandsea <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mapply.html" class="external-link">mapply</a></span><span class="op">(</span><span class="va">check_over_land</span>, <span class="va">glat</span>, <span class="va">glon</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_drop_geometry</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">new_orleans_tracts_katrina</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_grid_winds.html">get_grid_winds</a></span><span class="op">(</span>hurr_track <span class="op">=</span> <span class="va">katrina_tracks</span>, </span>
-<span>                                             grid_df <span class="op">=</span> <span class="va">new_orleans_centers</span><span class="op">)</span></span>
+<span><span class="va">new_orleans_tracts_katrina</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_grid_winds.html">get_grid_winds</a></span><span class="op">(</span></span>
+<span>  hurr_track <span class="op">=</span> <span class="va">katrina_tracks</span>, </span>
+<span>  grid_df <span class="op">=</span> <span class="va">new_orleans_centers</span></span>
+<span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">new_orleans_tracts_katrina</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 6 × 6</span></span>
-<span><span class="co">#&gt;   gridid date_time_max_wind  vmax_sust vmax_gust sust_dur gust_dur</span></span>
-<span><span class="co">#&gt;   &lt;chr&gt;  &lt;dttm&gt;                  &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1 001758 2005-08-29 13:30:00      56.2      83.8      900     1335</span></span>
-<span><span class="co">#&gt; 2 000617 2005-08-29 13:30:00      41.0      61.0      705     1125</span></span>
-<span><span class="co">#&gt; 3 001748 2005-08-29 13:30:00      40.2      59.9      690     1110</span></span>
-<span><span class="co">#&gt; 4 001747 2005-08-29 13:30:00      39.9      59.5      690     1110</span></span>
-<span><span class="co">#&gt; 5 001750 2005-08-29 13:30:00      41.3      61.5      690     1110</span></span>
-<span><span class="co">#&gt; 6 000800 2005-08-29 13:30:00      39.2      58.5      705     1110</span></span></code></pre></div>
+<span><span class="co">#&gt;   gridid date_time_max_wind vmax_sust vmax_gust sust_dur gust_dur</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;  &lt;dttm&gt;                 &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1 001758 NA                      56.2      83.8      900     1335</span></span>
+<span><span class="co">#&gt; 2 000617 NA                      41.0      61.0      705     1125</span></span>
+<span><span class="co">#&gt; 3 001748 NA                      40.2      59.9      690     1110</span></span>
+<span><span class="co">#&gt; 4 001747 NA                      39.9      59.5      690     1110</span></span>
+<span><span class="co">#&gt; 5 001750 NA                      41.3      61.5      690     1110</span></span>
+<span><span class="co">#&gt; 6 000800 NA                      39.2      58.5      705     1110</span></span></code></pre></div>
 <p>To plot these modeled winds, you can merge this modeled data back into the “sf” version of the census tract shapefile data, joining by census tract identification, and then add to the map. You can show wind speed in this map with color.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">new_orleans</span> <span class="op">&lt;-</span> <span class="va">new_orleans</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu">left_join</span><span class="op">(</span><span class="va">new_orleans_tracts_katrina</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TRACTCE"</span> <span class="op">=</span> <span class="st">"gridid"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">new_orleans_tracts_katrina</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TRACTCE"</span> <span class="op">=</span> <span class="st">"gridid"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://sjmgarnier.github.io/viridis/" class="external-link">viridis</a></span><span class="op">)</span></span>
 <span></span>
@@ -253,11 +268,11 @@
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">new_orleans</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">vmax_sust</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">new_orleans_tract_centers</span>, color <span class="op">=</span> <span class="st">"red"</span>, size <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://sjmgarnier.github.io/viridis/reference/scale_viridis.html" class="external-link">scale_fill_viridis</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Maximum\nsustained\nwinds (m/s)"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-13-1.png"><!-- --></p>
+<p><img src="reference/figures/README-unnamed-chunk-12-1.png"><!-- --></p>
 <p>There are also functions in this package that you can use to create a time series of all modeled winds at a specific grid point throughout the storm. For example, here is the code to calculate modeled wind at the population mean center of Dare County, NC (FIPS: 37055) throughout Hurricane Floyd:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dare_county</span> <span class="op">&lt;-</span> <span class="va">county_points</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="co"># Get grid point information for Dare County</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">gridid</span> <span class="op">==</span> <span class="st">"37055"</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">gridid</span> <span class="op">==</span> <span class="st">"37055"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">with_wind_radii</span> <span class="op">&lt;-</span> <span class="va">floyd_tracks</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="reference/create_full_track.html">create_full_track</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="co"># Interpolate tracks to every 15 minutes</span></span>
@@ -270,7 +285,7 @@
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Observation time (UTC)"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Modeled surface wind (m / s)"</span><span class="op">)</span> </span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-14-1.png"><!-- --></p>
+<p><img src="reference/figures/README-unnamed-chunk-13-1.png"><!-- --></p>
 <p>For more details, see the “Details” vignette, which walks through all steps of the modeling process.</p>
 </div>
 <div class="section level3">
@@ -281,16 +296,15 @@
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">floyd_map</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/map_wind.html">map_wind</a></span><span class="op">(</span><span class="va">floyd_winds</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/add_storm_track.html">add_storm_track</a></span><span class="op">(</span><span class="va">floyd_tracks</span>, plot_object <span class="op">=</span> <span class="va">floyd_map</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-15-1.png"><!-- --></p>
-<p>You can also choose whether to map sustained or gust winds (<code>value</code>, which can take “vmax_gust” or “vmax_sust”), as well as the unit to use for wind speed (<code>wind_metric</code>, which can take values of “mps” [the default] or “knots”).</p>
+<p><img src="reference/figures/README-unnamed-chunk-14-1.png"><!-- --></p>
+<p>You can also choose whether to map sustained or gust winds (<code>value</code>, which can take “vmax_gust” or “vmax_sust”), as well as the unit to use for wind speed (<code>wind_metric</code>, which can take values of “m/s” [the default] or “knots”).</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/map_wind.html">map_wind</a></span><span class="op">(</span><span class="va">floyd_winds</span>, value <span class="op">=</span> <span class="st">"vmax_gust"</span>, wind_metric <span class="op">=</span> <span class="st">"knots"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-16-1.png"><!-- --></p>
+<p><img src="reference/figures/README-unnamed-chunk-15-1.png"><!-- --></p>
 <p>Finally, you can map a binary classification of counties with winds at or above a certain break point. For example, to map counties with sustained wind at or above 34 knots during the storm, you can run:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/map_wind.html">map_wind</a></span><span class="op">(</span><span class="va">floyd_winds</span>, value <span class="op">=</span> <span class="st">"vmax_sust"</span>, wind_metric <span class="op">=</span> <span class="st">"knots"</span>,</span>
-<span>         break_point <span class="op">=</span> <span class="fl">34</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-17-1.png"><!-- --></p>
+<code class="sourceCode R"><span><span class="fu"><a href="reference/map_wind.html">map_wind</a></span><span class="op">(</span><span class="va">floyd_winds</span>, value <span class="op">=</span> <span class="st">"vmax_sust"</span>, wind_metric <span class="op">=</span> <span class="st">"knots"</span>, break_point <span class="op">=</span> <span class="fl">34</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-unnamed-chunk-16-1.png"><!-- --></p>
 </div>
 </div>
 <div class="section level2">
@@ -306,10 +320,10 @@
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"hurr_tracks"</span><span class="op">)</span></span>
 <span><span class="va">hurr_tracks</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/separate.html" class="external-link">separate</a></span><span class="op">(</span><span class="va">storm_id</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"storm"</span>, <span class="st">"year"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">storm</span>, <span class="va">year</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">year</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span>storms <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">storm</span>, collapse <span class="op">=</span> <span class="st">", "</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">storm</span>, <span class="va">year</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">year</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span>storms <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">storm</span>, collapse <span class="op">=</span> <span class="st">", "</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Expected 2 pieces. Additional pieces discarded in 27 rows [3313, 3314, 3315,</span></span>
 <span><span class="co">#&gt; 3316, 3317, 3318, 3319, 3320, 3321, 3322, 3323, 3324, 3325, 3326, 3327, 3328,</span></span>
@@ -504,7 +518,8 @@ Willoughby, HE, RWR Darling, and ME Rahn. 2006. “Parametric Representation of 
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Brooke Anderson <br><small class="roles"> Author, maintainer </small>   </li>
+<li>Ryan Zomorrodi <br><small class="roles"> Author, maintainer </small>   </li>
+<li>Brooke Anderson <br><small class="roles"> Author </small>   </li>
 <li>Andrea Schumacher <br><small class="roles"> Author </small>   </li>
 <li>Seth Guikema <br><small class="roles"> Author </small>   </li>
 <li>Steven Quiring <br><small class="roles"> Author </small>   </li>
@@ -527,7 +542,7 @@ Willoughby, HE, RWR Darling, and ME Rahn. 2006. “Parametric Representation of 
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Brooke Anderson, Andrea Schumacher, Seth Guikema, Steven Quiring, Joshua Ferreri, Elizabeth Tennant, Jordan Robinson.</p>
+  <p>Developed by Ryan Zomorrodi, Brooke Anderson, Andrea Schumacher, Seth Guikema, Steven Quiring, Joshua Ferreri, Elizabeth Tennant, Jordan Robinson.</p>
 </div>
 
 <div class="pkgdown-footer-right">

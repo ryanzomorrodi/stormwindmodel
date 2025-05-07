@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">stormwindmodel</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.5.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.5.11</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -404,11 +404,11 @@ period.</p>
 <span><span class="co">##     hurr_track &lt;- hurr_track[c("date", "latitude", "longitude", </span></span>
 <span><span class="co">##         "wind")]</span></span>
 <span><span class="co">##     colnames(hurr_track) &lt;- c("date", "tclat", "tclon", "vmax")</span></span>
-<span><span class="co">##     hurr_track$date &lt;- lubridate::ymd_hm(hurr_track$date)</span></span>
+<span><span class="co">##     hurr_track$date &lt;- as.POSIXct(hurr_track$date, format = "%Y%m%d%H%M")</span></span>
 <span><span class="co">##     hurr_track$tclat &lt;- as.numeric(hurr_track$tclat)</span></span>
 <span><span class="co">##     hurr_track$tclon &lt;- as.numeric(hurr_track$tclon)</span></span>
-<span><span class="co">##     hurr_track$vmax &lt;- weathermetrics::convert_wind_speed(hurr_track$vmax, </span></span>
-<span><span class="co">##         "knots", "mps", round = 3)</span></span>
+<span><span class="co">##     hurr_track$vmax &lt;- round(as.numeric(units::set_units(units::set_units(hurr_track$vmax, </span></span>
+<span><span class="co">##         "knots"), "m/s")), 3)</span></span>
 <span><span class="co">##     hurr_track$track_time_simple = as.numeric(difftime(hurr_track$date, </span></span>
 <span><span class="co">##         hurr_track$date[1], units = "hour"))</span></span>
 <span><span class="co">##     if (diff(range(hurr_track$tclon)) &gt; 300) {</span></span>
@@ -431,11 +431,11 @@ period.</p>
 <span><span class="co">##         interpolate_line(x = hurr_track$track_time_simple, y = hurr_track$vmax, </span></span>
 <span><span class="co">##             new_x = time_to_interp)</span></span>
 <span><span class="co">##     })</span></span>
-<span><span class="co">##     date &lt;- hurr_track$date[1] + lubridate::seconds(3600 * interp_time)</span></span>
+<span><span class="co">##     date &lt;- hurr_track$date[1] + (3600 * interp_time)</span></span>
 <span><span class="co">##     full_track &lt;- data.frame(date, tclat, tclon, vmax)</span></span>
 <span><span class="co">##     return(full_track)</span></span>
 <span><span class="co">## }</span></span>
-<span><span class="co">## &lt;bytecode: 0x55a92f6cb210&gt;</span></span>
+<span><span class="co">## &lt;bytecode: 0x55d559845520&gt;</span></span>
 <span><span class="co">## &lt;environment: namespace:stormwindmodel&gt;</span></span></code></pre>
 <p>Here is an example of running this function, where
 <code>floyd_tracks</code> is a dataframe with the hurricane track
@@ -444,7 +444,7 @@ information for Hurricane Floyd (saved as data with this package), and
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"floyd_tracks"</span><span class="op">)</span></span>
 <span><span class="va">full_track</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_full_track.html">create_full_track</a></span><span class="op">(</span>hurr_track <span class="op">=</span> <span class="va">floyd_tracks</span>, tint <span class="op">=</span> <span class="fl">0.25</span><span class="op">)</span></span>
-<span><span class="va">full_track</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">slice</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">full_track</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##                  date    tclat     tclon     vmax</span></span>
 <span><span class="co">## 1 1999-09-07 18:00:00 14.60000 -45.60000 12.86100</span></span>
 <span><span class="co">## 2 1999-09-07 18:15:00 14.61835 -45.65439 12.96817</span></span>
@@ -454,18 +454,20 @@ information for Hurricane Floyd (saved as data with this package), and
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">maps</span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">floyd_states</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/maps/man/map.html" class="external-link">map</a></span><span class="op">(</span><span class="st">"state"</span>, plot <span class="op">=</span> <span class="cn">FALSE</span>, fill <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ID</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"north carolina"</span>, <span class="st">"south carolina"</span>, <span class="st">"maryland"</span>,</span>
-<span>                          <span class="st">"georgia"</span>, <span class="st">"florida"</span>, <span class="st">"virginia"</span>, <span class="st">"delaware"</span>, </span>
-<span>                          <span class="st">"pennsylvania"</span>, <span class="st">"west virginia"</span>, <span class="st">"new jersey"</span>,</span>
-<span>                          <span class="st">"new york"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">floyd_states</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/maps/man/map.html" class="external-link">map</a></span><span class="op">(</span><span class="st">"state"</span>, plot <span class="op">=</span> <span class="cn">FALSE</span>, fill <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ID</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"north carolina"</span>, <span class="st">"south carolina"</span>, <span class="st">"maryland"</span>,</span>
+<span>                   <span class="st">"georgia"</span>, <span class="st">"florida"</span>, <span class="st">"virginia"</span>, <span class="st">"delaware"</span>, </span>
+<span>                   <span class="st">"pennsylvania"</span>, <span class="st">"west virginia"</span>, <span class="st">"new jersey"</span>,</span>
+<span>                   <span class="st">"new york"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">floyd_15_min</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_full_track.html">create_full_track</a></span><span class="op">(</span><span class="va">floyd_tracks</span><span class="op">)</span></span>
 <span><span class="va">floyd_2_hrs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_full_track.html">create_full_track</a></span><span class="op">(</span><span class="va">floyd_tracks</span>, tint <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">floyd_15_min</span> <span class="op">&lt;-</span> <span class="va">floyd_15_min</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">floyd_15_min</span> <span class="op">&lt;-</span> <span class="va">floyd_15_min</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span>coords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tclon"</span>, <span class="st">"tclat"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html" class="external-link">st_set_crs</a></span><span class="op">(</span><span class="fl">4326</span><span class="op">)</span></span>
 <span><span class="va">floyd_2_hrs</span> <span class="op">&lt;-</span> <span class="va">floyd_2_hrs</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
@@ -486,7 +488,7 @@ information for Hurricane Floyd (saved as data with this package), and
 <span>            size <span class="op">=</span> <span class="fl">0.5</span>, color <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Interpolated to 2 hours"</span><span class="op">)</span> </span>
 <span></span>
-<span><span class="fu">gridExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html" class="external-link">grid.arrange</a></span><span class="op">(</span><span class="va">b</span>, <span class="va">c</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">grid.arrange</span><span class="op">(</span><span class="va">b</span>, <span class="va">c</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Details_files/figure-html/unnamed-chunk-7-1.png" style="display: block; margin: auto;"></p>
 <p>The function includes a correction in case the storm tracks cross the
 International Date line. In this case, the longitude might change from
@@ -506,14 +508,14 @@ International Date line:</p>
 <span>  <span class="co"># range).</span></span>
 <span>  <span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">hurr_track</span><span class="op">$</span><span class="va">tclon</span><span class="op">)</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">300</span><span class="op">)</span><span class="op">{</span></span>
 <span>    <span class="va">hurr_track</span> <span class="op">&lt;-</span> <span class="va">hurr_track</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>tclon <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">tclon</span> <span class="op">&gt;</span> <span class="fl">0</span>, <span class="va">tclon</span>, <span class="va">tclon</span> <span class="op">+</span> <span class="fl">360</span><span class="op">)</span><span class="op">)</span></span>
+<span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>tclon <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">tclon</span> <span class="op">&gt;</span> <span class="fl">0</span>, <span class="va">tclon</span>, <span class="va">tclon</span> <span class="op">+</span> <span class="fl">360</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="op">}</span></span></code></pre></div>
 <p>Here is the code in the <code>create_full_track</code> function that
 ensures the output location data remain within -180 to 180 for
 longitude:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>    <span class="co"># Make sure that longitude is between -180 and 180</span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>tclon <span class="op">=</span> <span class="op">(</span><span class="op">(</span><span class="va">tclon</span> <span class="op">+</span> <span class="fl">180</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html" class="external-link">%%</a></span> <span class="fl">360</span><span class="op">)</span> <span class="op">-</span> <span class="fl">180</span><span class="op">)</span></span></code></pre></div>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>tclon <span class="op">=</span> <span class="op">(</span><span class="op">(</span><span class="va">tclon</span> <span class="op">+</span> <span class="fl">180</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html" class="external-link">%%</a></span> <span class="fl">360</span><span class="op">)</span> <span class="op">-</span> <span class="fl">180</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="add-willoughby-inputs-and-parameters">Add Willoughby inputs and parameters<a class="anchor" aria-label="anchor" href="#add-willoughby-inputs-and-parameters"></a>
@@ -525,9 +527,7 @@ process is done using the <code>add_wind_radii</code> function. For the
 Hurricane Floyd example, here is an example of running the code and the
 first three and last three line of output:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/geanders/stormwindmodel" class="external-link">stormwindmodel</a></span><span class="op">)</span></span>
-<span><span class="va">with_wind_radii</span> <span class="op">&lt;-</span> <span class="fu">stormwindmodel</span><span class="fu">::</span><span class="fu"><a href="../reference/add_wind_radii.html">add_wind_radii</a></span><span class="op">(</span>full_track <span class="op">=</span> <span class="va">full_track</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">with_wind_radii</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/add_wind_radii.html">add_wind_radii</a></span><span class="op">(</span>full_track <span class="op">=</span> <span class="va">full_track</span><span class="op">)</span></span>
 <span><span class="va">with_wind_radii</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">-</span><span class="fl">3</span><span class="op">)</span><span class="op">:</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##                  date    tclat     tclon     tcdir   tcspd_u  tcspd_v  vmax_gl</span></span>
@@ -589,7 +589,7 @@ function:</p>
 <span><span class="co">##         "n", "A", "R1", "R2")]</span></span>
 <span><span class="co">##     return(with_wind_radii)</span></span>
 <span><span class="co">## }</span></span>
-<span><span class="co">## &lt;bytecode: 0x55a931fe1790&gt;</span></span>
+<span><span class="co">## &lt;bytecode: 0x55d55da439d0&gt;</span></span>
 <span><span class="co">## &lt;environment: namespace:stormwindmodel&gt;</span></span></code></pre>
 <p>This function uses many helper functions, which do each step of the
 process to calculate inputs and parameters for the wind model. These
@@ -664,7 +664,7 @@ storm center longitudes):</p>
 <span><span class="co">## {</span></span>
 <span><span class="co">##     .Call(`_stormwindmodel_degrees_to_radians`, degrees)</span></span>
 <span><span class="co">## }</span></span>
-<span><span class="co">## &lt;bytecode: 0x55a931f814e0&gt;</span></span>
+<span><span class="co">## &lt;bytecode: 0x55d55da5ed58&gt;</span></span>
 <span><span class="co">## &lt;environment: namespace:stormwindmodel&gt;</span></span></code></pre>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">stormwindmodel</span><span class="fu">:::</span><span class="va">latlon_to_km</span></span></code></pre></div>
@@ -673,7 +673,7 @@ storm center longitudes):</p>
 <span><span class="co">##     .Call(`_stormwindmodel_latlon_to_km`, tclat_1, tclon_1, tclat_2, </span></span>
 <span><span class="co">##         tclon_2, Rearth)</span></span>
 <span><span class="co">## }</span></span>
-<span><span class="co">## &lt;bytecode: 0x55a92ee55788&gt;</span></span>
+<span><span class="co">## &lt;bytecode: 0x55d5563bf3e8&gt;</span></span>
 <span><span class="co">## &lt;environment: namespace:stormwindmodel&gt;</span></span></code></pre>
 <p>The package uses these functions in a function called
 <code>calc_forward_speed</code> that calculates the distance between two
@@ -687,7 +687,7 @@ and converts it to meters per second.</p>
 <span><span class="co">##     .Call(`_stormwindmodel_calc_forward_speed`, tclat_1, tclon_1, </span></span>
 <span><span class="co">##         time_1, tclat_2, tclon_2, time_2)</span></span>
 <span><span class="co">## }</span></span>
-<span><span class="co">## &lt;bytecode: 0x55a931fd0948&gt;</span></span>
+<span><span class="co">## &lt;bytecode: 0x55d55da4ec40&gt;</span></span>
 <span><span class="co">## &lt;environment: namespace:stormwindmodel&gt;</span></span></code></pre>
 </div>
 <div class="section level4">
@@ -744,7 +744,7 @@ so on:</p>
 <span><span class="co">##     .Call(`_stormwindmodel_calc_bearing`, tclat_1, tclon_1, tclat_2, </span></span>
 <span><span class="co">##         tclon_2)</span></span>
 <span><span class="co">## }</span></span>
-<span><span class="co">## &lt;bytecode: 0x55a931f85c88&gt;</span></span>
+<span><span class="co">## &lt;bytecode: 0x55d55da5a310&gt;</span></span>
 <span><span class="co">## &lt;environment: namespace:stormwindmodel&gt;</span></span></code></pre>
 </div>
 <div class="section level4">
@@ -800,7 +800,7 @@ s.</p>
 <span><span class="co">##     vmax_sfc_sym[vmax_sfc_sym &lt; 0] &lt;- 0</span></span>
 <span><span class="co">##     return(vmax_sfc_sym)</span></span>
 <span><span class="co">## }</span></span>
-<span><span class="co">## &lt;bytecode: 0x55a931f78600&gt;</span></span>
+<span><span class="co">## &lt;bytecode: 0x55d55da636c0&gt;</span></span>
 <span><span class="co">## &lt;environment: namespace:stormwindmodel&gt;</span></span></code></pre>
 </div>
 <div class="section level4">
@@ -844,7 +844,7 @@ over water and 80% of that, 0.72, if the storm’s center is over land
 <span><span class="co">##     vmax_gl &lt;- vmax_sfc_sym/reduction_factor</span></span>
 <span><span class="co">##     return(vmax_gl)</span></span>
 <span><span class="co">## }</span></span>
-<span><span class="co">## &lt;bytecode: 0x55a932144c90&gt;</span></span>
+<span><span class="co">## &lt;bytecode: 0x55d55aa0ab10&gt;</span></span>
 <span><span class="co">## &lt;environment: namespace:stormwindmodel&gt;</span></span></code></pre>
 <p>To determine if the storm center is over land or over water, the
 package includes a dataset called <code>landmask</code>, with locations
@@ -874,7 +874,7 @@ or over water at its observed location.</p>
 <span><span class="co">##         "land"</span></span>
 <span><span class="co">##     return(over_land)</span></span>
 <span><span class="co">## }</span></span>
-<span><span class="co">## &lt;bytecode: 0x55a931f780e8&gt;</span></span>
+<span><span class="co">## &lt;bytecode: 0x55d55da68a80&gt;</span></span>
 <span><span class="co">## &lt;environment: namespace:stormwindmodel&gt;</span></span></code></pre>
 <p>Here is an example of applying this function to the tracks for
 Hurricane Floyd:</p>
@@ -936,7 +936,7 @@ Southern Hemisphere storms.</li>
 <span><span class="co">## {</span></span>
 <span><span class="co">##     .Call(`_stormwindmodel_will7a`, vmax_gl, tclat)</span></span>
 <span><span class="co">## }</span></span>
-<span><span class="co">## &lt;bytecode: 0x55a931fca8d8&gt;</span></span>
+<span><span class="co">## &lt;bytecode: 0x55d55a5d56b0&gt;</span></span>
 <span><span class="co">## &lt;environment: namespace:stormwindmodel&gt;</span></span></code></pre>
 </div>
 <div class="section level4">
@@ -1106,7 +1106,7 @@ f'(\xi) = 5 * 126 \xi^4 - 6 * 420 \xi^5 + 7 * 540 \xi^6 - 8 * 315
 <span><span class="co">##     deriv_func &lt;- c(deriv, func)</span></span>
 <span><span class="co">##     return(deriv_func)</span></span>
 <span><span class="co">## }</span></span>
-<span><span class="co">## &lt;bytecode: 0x55a931fbc008&gt;</span></span>
+<span><span class="co">## &lt;bytecode: 0x55d55aeacfa0&gt;</span></span>
 <span><span class="co">## &lt;environment: namespace:stormwindmodel&gt;</span></span></code></pre>
 <div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">stormwindmodel</span><span class="fu">::</span><span class="va"><a href="../reference/solve_for_xi.html">solve_for_xi</a></span></span></code></pre></div>
@@ -1134,7 +1134,7 @@ f'(\xi) = 5 * 126 \xi^4 - 6 * 420 \xi^5 + 7 * 540 \xi^6 - 8 * 315
 <span><span class="co">##         }</span></span>
 <span><span class="co">##     }</span></span>
 <span><span class="co">## }</span></span>
-<span><span class="co">## &lt;bytecode: 0x55a931fbd780&gt;</span></span>
+<span><span class="co">## &lt;bytecode: 0x55d559455c88&gt;</span></span>
 <span><span class="co">## &lt;environment: namespace:stormwindmodel&gt;</span></span></code></pre>
 <p>While the Newton-Raphson method can sometimes perform poorly in
 finding global maxima, in this case the function for which we are trying
@@ -1207,7 +1207,7 @@ points):</p>
 <span><span class="co">##             1])</span></span>
 <span><span class="co">##     return(grid_wind)</span></span>
 <span><span class="co">## }</span></span>
-<span><span class="co">## &lt;bytecode: 0x55a935e4c530&gt;</span></span>
+<span><span class="co">## &lt;bytecode: 0x55d55b315ca8&gt;</span></span>
 <span><span class="co">## &lt;environment: namespace:stormwindmodel&gt;</span></span></code></pre>
 <p>Again, this function uses a lot of helper functions for each step. As
 an input, this function requires both the dataframe output from
@@ -1397,7 +1397,7 @@ V_G(r) = V_i (1 - w) + V_o w, (R_1 \le r \le R_2)
 <span><span class="co">##     .Call(`_stormwindmodel_will1`, cdist, Rmax, R1, R2, vmax_gl, </span></span>
 <span><span class="co">##         n, A, X1, X2)</span></span>
 <span><span class="co">## }</span></span>
-<span><span class="co">## &lt;bytecode: 0x55a93220e158&gt;</span></span>
+<span><span class="co">## &lt;bytecode: 0x55d56120fcf0&gt;</span></span>
 <span><span class="co">## &lt;environment: namespace:stormwindmodel&gt;</span></span></code></pre>
 <p>which includes several helper functions:</p>
 <div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
@@ -1426,7 +1426,7 @@ further reduced by 20%.</p>
 <span><span class="co">##     .Call(`_stormwindmodel_gradient_to_surface`, wind_gl_aa, </span></span>
 <span><span class="co">##         cdist, glandsea)</span></span>
 <span><span class="co">## }</span></span>
-<span><span class="co">## &lt;bytecode: 0x55a931dbafa8&gt;</span></span>
+<span><span class="co">## &lt;bytecode: 0x55d55cb2eff8&gt;</span></span>
 <span><span class="co">## &lt;environment: namespace:stormwindmodel&gt;</span></span></code></pre>
 <p>Here is a reproduction of part of Figure 3 from Knaff et al. <span class="citation">(2011)</span> using this function:</p>
 <div class="sourceCode" id="cb61"><pre class="downlit sourceCode r">
@@ -1469,7 +1469,7 @@ calculate the angle from the storm center to the grid point:</p>
 <span><span class="co">##     .Call(`_stormwindmodel_calc_bearing`, tclat_1, tclon_1, tclat_2, </span></span>
 <span><span class="co">##         tclon_2)</span></span>
 <span><span class="co">## }</span></span>
-<span><span class="co">## &lt;bytecode: 0x55a931f85c88&gt;</span></span>
+<span><span class="co">## &lt;bytecode: 0x55d55da5a310&gt;</span></span>
 <span><span class="co">## &lt;environment: namespace:stormwindmodel&gt;</span></span></code></pre>
 <p>Next, a function calculates the gradient wind direction based on the
 bearing of a location from the storm. This gradient wind direction is
@@ -1484,7 +1484,7 @@ degrees is due North, etc.).</p>
 <span><span class="co">## {</span></span>
 <span><span class="co">##     .Call(`_stormwindmodel_calc_gwd`, tclat, tclon, glat, glon)</span></span>
 <span><span class="co">## }</span></span>
-<span><span class="co">## &lt;bytecode: 0x55a935e33e40&gt;</span></span>
+<span><span class="co">## &lt;bytecode: 0x55d55e503620&gt;</span></span>
 <span><span class="co">## &lt;environment: namespace:stormwindmodel&gt;</span></span></code></pre>
 </div>
 <div class="section level4">
@@ -1529,7 +1529,7 @@ the Northern Hemisphere:</p>
 <span><span class="co">##     .Call(`_stormwindmodel_add_inflow`, gwd, cdist, Rmax, tclat, </span></span>
 <span><span class="co">##         glandsea)</span></span>
 <span><span class="co">## }</span></span>
-<span><span class="co">## &lt;bytecode: 0x55a935da5dc0&gt;</span></span>
+<span><span class="co">## &lt;bytecode: 0x55d560861928&gt;</span></span>
 <span><span class="co">## &lt;environment: namespace:stormwindmodel&gt;</span></span></code></pre>
 </div>
 <div class="section level4">
@@ -1572,7 +1572,7 @@ storm at the grid point:</p>
 <span><span class="co">##     .Call(`_stormwindmodel_add_forward_speed`, wind_sfc_sym, </span></span>
 <span><span class="co">##         tcspd_u, tcspd_v, swd, cdist, Rmax)</span></span>
 <span><span class="co">## }</span></span>
-<span><span class="co">## &lt;bytecode: 0x55a9377f4d10&gt;</span></span>
+<span><span class="co">## &lt;bytecode: 0x55d55fed90b8&gt;</span></span>
 <span><span class="co">## &lt;environment: namespace:stormwindmodel&gt;</span></span></code></pre>
 </div>
 <div class="section level4">
@@ -1630,14 +1630,14 @@ like:</p>
 <span>                                     grid_df <span class="op">=</span> <span class="va">county_points</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">grid_winds_katrina</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 6 × 6</span></span></span>
-<span><span class="co">##   gridid date_time_max_wind  vmax_sust vmax_gust sust_dur gust_dur</span></span>
-<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> 01001  2005-08-30 <span style="color: #949494;">01:15:00</span>     12.3       18.3        0        0</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span> 01003  2005-08-29 <span style="color: #949494;">15:45:00</span>     20.5       30.5      135      840</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span> 01005  2005-08-29 <span style="color: #949494;">22:00:00</span>      8.40      12.5        0        0</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">4</span> 01007  2005-08-30 <span style="color: #949494;">02:45:00</span>     15.2       22.6        0      510</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">5</span> 01009  2005-08-30 <span style="color: #949494;">06:00:00</span>     12.5       18.6        0        0</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">6</span> 01011  2005-08-29 <span style="color: #949494;">22:15:00</span>      9.56      14.2        0        0</span></span></code></pre>
+<span><span class="co">##   gridid date_time_max_wind vmax_sust vmax_gust sust_dur gust_dur</span></span>
+<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span> 01001  <span style="color: #BB0000;">NA</span>                     12.3       18.3        0        0</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span> 01003  <span style="color: #BB0000;">NA</span>                     20.5       30.5      135      840</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">3</span> 01005  <span style="color: #BB0000;">NA</span>                      8.40      12.5        0        0</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">4</span> 01007  <span style="color: #BB0000;">NA</span>                     15.2       22.6        0      510</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">5</span> 01009  <span style="color: #BB0000;">NA</span>                     12.5       18.6        0        0</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">6</span> 01011  <span style="color: #BB0000;">NA</span>                      9.56      14.2        0        0</span></span></code></pre>
 <p>with the maximum sustained and gust wind speeds (in meters per
 second) and duration of winds over 20 meters per second for each wind
 type (this cutoff point can be customized with the
@@ -1657,7 +1657,7 @@ added for each grid point.</p>
 <span><span class="co">##         tint = tint)</span></span>
 <span><span class="co">##     return(grid_winds_summary)</span></span>
 <span><span class="co">## }</span></span>
-<span><span class="co">## &lt;bytecode: 0x55a934bb58e0&gt;</span></span>
+<span><span class="co">## &lt;bytecode: 0x55d55ecb1168&gt;</span></span>
 <span><span class="co">## &lt;environment: namespace:stormwindmodel&gt;</span></span></code></pre>
 <p>There is also a function to map county-level estimates. For this
 function to work, winds must be modeled at county centers, with FIPS
@@ -1758,7 +1758,7 @@ Weather Review</em> 134 (4): 1102–20.
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Brooke Anderson, Andrea Schumacher, Seth Guikema, Steven Quiring, Joshua Ferreri, Elizabeth Tennant, Jordan Robinson.</p>
+  <p>Developed by Ryan Zomorrodi, Brooke Anderson, Andrea Schumacher, Seth Guikema, Steven Quiring, Joshua Ferreri, Elizabeth Tennant, Jordan Robinson.</p>
 </div>
 
 <div class="pkgdown-footer-right">
