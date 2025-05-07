@@ -55,7 +55,6 @@ Imports:
     ggplot2 (>= 3.3.3),
     lubridate (>= 1.7.9),
     maps (>= 3.3.0),
-    plyr (>= 1.8.6),
     rlang (>= 0.4.10),
     Rcpp,
     stringr (>= 1.4.0),
@@ -83,6 +82,8 @@ Suggests:
     xml2,
     metR (>= 0.16.0),
     scales
+Remotes: 
+    geanders/hurricaneexposuredata
 LinkingTo: 
     Rcpp, 
     testthat
