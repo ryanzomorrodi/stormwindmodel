@@ -51,42 +51,58 @@
 #'
 #' @export
 add_wind_radii <- function(full_track = create_full_track()){
+  with_wind_radii <- full_track
 
-        with_wind_radii <- full_track %>%
-          dplyr::mutate(tcspd = calc_forward_speed(tclat_1 = .data$tclat,
-                                                     tclon_1 = .data$tclon,
-                                                     time_1 = .data$date,
-                                                     tclat_2 = dplyr::lead(.data$tclat),
-                                                     tclon_2 = dplyr::lead(.data$tclon),
-                                                     time_2 = dplyr::lead(.data$date)),
-                        tcdir = calc_bearing(tclat_1 = .data$tclat,
-                                               tclon_1 = .data$tclon,
-                                               tclat_2 = dplyr::lead(.data$tclat),
-                                               tclon_2 = dplyr::lead(.data$tclon)),
-                        tcspd_u = .data$tcspd * cos(degrees_to_radians(.data$tcdir)),
-                        tcspd_v = .data$tcspd * sin(degrees_to_radians(.data$tcdir)),
-                        vmax_sfc_sym = remove_forward_speed(vmax = .data$vmax,
-                                                              tcspd = .data$tcspd),
-                        over_land = mapply(check_over_land,
-                                             tclat = .data$tclat,
-                                             tclon = .data$tclon),
-                        vmax_gl = mapply(calc_gradient_speed,
-                                           vmax_sfc_sym = .data$vmax_sfc_sym,
-                                           over_land = .data$over_land),
-                        Rmax = will7a(.data$vmax_gl, .data$tclat),
-                        X1 = will10a(.data$vmax_gl, .data$tclat),
-                        n = will10b(.data$vmax_gl, .data$tclat),
-                        A = will10c(.data$vmax_gl, .data$tclat),
-                        eq3_right = will3_right(.data$n, .data$A,
-                                                  .data$X1, .data$Rmax),
-                        xi = mapply(solve_for_xi, eq3_right = .data$eq3_right),
-                        R1 = calc_R1(.data$Rmax, .data$xi),
-                        R2 = ifelse(.data$Rmax > 20, .data$R1 + 25, .data$R1 + 15)
-                        ) %>%
-          dplyr::select(c(.data$date, .data$tclat, .data$tclon, .data$tcdir, .data$tcspd_u,
-                          .data$tcspd_v, .data$vmax_gl, .data$Rmax, .data$X1, .data$n,
-                          .data$A, .data$R1, .data$R2))
-        return(with_wind_radii)
+  with_wind_radii$tcspd <- calc_forward_speed(
+    tclat_1 = with_wind_radii$tclat,
+    tclon_1 = with_wind_radii$tclon,
+    time_1 = with_wind_radii$date,
+    tclat_2 = c(with_wind_radii$tclat[-1], NA),
+    tclon_2 = c(with_wind_radii$tclon[-1], NA),
+    time_2 = c(with_wind_radii$date[-1], NA)
+  )
+  with_wind_radii$tcdir <- calc_bearing(
+    tclat_1 = with_wind_radii$tclat,
+    tclon_1 = with_wind_radii$tclon,
+    tclat_2 = c(with_wind_radii$tclat[-1], NA),
+    tclon_2 = c(with_wind_radii$tclon[-1], NA)
+  )
+  with_wind_radii$tcspd_u = with_wind_radii$tcspd * cos(degrees_to_radians(with_wind_radii$tcdir))
+  with_wind_radii$tcspd_v = with_wind_radii$tcspd * sin(degrees_to_radians(with_wind_radii$tcdir))
+  with_wind_radii$vmax_sfc_sym = remove_forward_speed(
+    vmax = with_wind_radii$vmax,
+    tcspd = with_wind_radii$tcspd
+  )
+  with_wind_radii$over_land = mapply(
+    check_over_land,
+    tclat = with_wind_radii$tclat,
+    tclon = with_wind_radii$tclon
+  )
+  with_wind_radii$vmax_gl = mapply(
+    calc_gradient_speed,
+    vmax_sfc_sym = with_wind_radii$vmax_sfc_sym,
+    over_land = with_wind_radii$over_land
+  )
+  with_wind_radii$Rmax = will7a(with_wind_radii$vmax_gl, with_wind_radii$tclat)
+  with_wind_radii$X1 = will10a(with_wind_radii$vmax_gl, with_wind_radii$tclat)
+  with_wind_radii$n = will10b(with_wind_radii$vmax_gl, with_wind_radii$tclat)
+  with_wind_radii$A = will10c(with_wind_radii$vmax_gl, with_wind_radii$tclat)
+  with_wind_radii$eq3_right = will3_right(
+    with_wind_radii$n, 
+    with_wind_radii$A,
+    with_wind_radii$X1, 
+    with_wind_radii$Rmax
+  )
+  with_wind_radii$xi = mapply(solve_for_xi, eq3_right = with_wind_radii$eq3_right)
+  with_wind_radii$R1 = calc_R1(with_wind_radii$Rmax, with_wind_radii$xi)
+  with_wind_radii$R2 = ifelse(
+    with_wind_radii$Rmax > 20, 
+    with_wind_radii$R1 + 25, 
+    with_wind_radii$R1 + 15
+  )
+  with_wind_radii <- with_wind_radii[c("date", "tclat", "tclon", "tcdir", "tcspd_u", "tcspd_v", "vmax_gl", "Rmax", "X1", "n", "A", "R1", "R2")]
+  
+  return(with_wind_radii)
 }
 
 #' Calculate wind speed at grid points
@@ -362,9 +378,13 @@ summarize_grid_winds <- function(grid_winds,
                                      vmax_gust = .data$vmax_sust * 1.49,
                                      sust_dur = apply(grid_winds, MARGIN = 2, FUN = calc_sust_dur),
                                      gust_dur = apply(grid_winds, MARGIN = 2, FUN = calc_gust_dur)
-                                     ) %>%
-    dplyr::mutate(date_time_max_wind = ifelse(.data$vmax_sust == 0, NA, .data$date_time_max_wind),
-           date_time_max_wind = lubridate::ymd_hms(.data$date_time_max_wind))
+                                     )
+  grid_wind_summary$date_time_max_wind <- ifelse(
+    grid_wind_summary$vmax_sust == 0, 
+    NA, 
+    grid_wind_summary$date_time_max_wind
+  )
+  grid_wind_summary$date_time_max_wind <- lubridate::ymd_hms(grid_wind_summary$date_time_max_wind)
 
   return(grid_wind_summary)
 }
