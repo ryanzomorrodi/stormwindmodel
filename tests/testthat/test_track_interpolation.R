@@ -1,5 +1,3 @@
-library(tidyverse)
-
 test_that("Interpolation works with North Atlantic storm", {
 
   # Floyd
@@ -33,7 +31,7 @@ test_that("Interpolation works with North Atlantic storm", {
 })
 
 test_that("Interpolation works for Southern Atlantic storm", {
-  sample_track_1 <- tribble(
+  sample_track_1 <- tibble::tribble(
     ~ date, ~ latitude, ~ longitude, ~ wind,
     "200403270000", -29.10, -44.90, 70,
     "200403270600", -29.30, -45.60, 75,
@@ -55,7 +53,7 @@ test_that("Interpolation works for Southern Atlantic storm", {
 })
 
 test_that("Interpolation works for Western Pacific storm", {
-  sample_track_1 <- tribble(
+  sample_track_1 <- tibble::tribble(
     ~ date, ~ latitude, ~ longitude, ~ wind,
     "202008311200", 22.90, 145.80, 25,
     "202008311800", 22.10, 145.31, 35,
@@ -71,7 +69,7 @@ test_that("Interpolation works for Western Pacific storm", {
                             21.36, 20.90, 20.65, 20.50)
   expected_interp_longs <- c(145.80, 145.51, 144.90, 144.64, 144.50,
                              144.44, 144.40, 144.31, 144.10)
-  expected_interp_vmax <- c(25, 30, 35, 35, 35, 37, 39, 39, 39) %>%
+  expected_interp_vmax <- c(25, 30, 35, 35, 35, 37, 39, 39, 39) |>
     weathermetrics::knots_to_speed(unit = "mps", round = 1)
 
   expect_equal(round(interp_track_1$tclat), round(expected_interp_lats))
@@ -82,7 +80,7 @@ test_that("Interpolation works for Western Pacific storm", {
 # Harold crossed the international dateline. Try with both IBTrACs conventions
 # (goes above 180) and other (resets at 180 to -180).
 test_that("Interpolation works with IBTrACS convention across international dateline", {
-  sample_track_1 <- tribble(
+  sample_track_1 <- tibble::tribble(
     ~ date, ~ latitude, ~ longitude, ~ wind,
     "202004071200", -17.40, 174.00, 109,
     "202004071800", -18.30, 175.80, 109,
@@ -96,7 +94,7 @@ test_that("Interpolation works with IBTrACS convention across international date
   )
   interp_track_1 <- create_full_track(hurr_track = sample_track_1, tint = 3)
 
-  sample_track_2 <- tribble(
+  sample_track_2 <- tibble::tribble(
     ~ date, ~ latitude, ~ longitude, ~ wind,
     "202004071200", -17.40, 174.00, 109,
     "202004071800", -18.30, 175.80, 109,
@@ -120,7 +118,7 @@ test_that("Interpolation works with IBTrACS convention across international date
                              -175.60, -174.57, -173.50, -172.17, -170.70,
                              -169.23, -167.70)
   expected_interp_vmax <- c(109, 109, 109, 114, 119, 119, 119, 117, 115, 112,
-                            109, 109, 109, 101, 93, 86, 80) %>%
+                            109, 109, 109, 101, 93, 86, 80) |>
     weathermetrics::knots_to_speed(unit = "mps", round = 1)
 
   expect_equal(round(interp_track_1$tclat), round(expected_interp_lats))
