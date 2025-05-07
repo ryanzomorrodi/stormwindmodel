@@ -35,9 +35,6 @@
 #' map_wind(grid_winds_katrina, value = "vmax_gust")
 #' map_wind(grid_winds_katrina, break_point = 20)
 #'
-#'
-#' @importFrom dplyr %>%
-#'
 #' @export
 map_wind <- function(grid_winds, value = "vmax_sust", break_point = NULL,
                      wind_metric = "mps"){
@@ -76,32 +73,36 @@ map_wind <- function(grid_winds, value = "vmax_sust", break_point = NULL,
 
     exposure_palette <- c("#ffffff", exposure_palette, "#1a1a1a")
 
-    grid_winds <- grid_winds %>%
-      dplyr::mutate(value = cut(.data$value, breaks = breaks,
-                                   include.lowest = TRUE))
+    grid_winds$value <- cut(
+      grid_winds$value,
+      breaks = breaks,
+      include.lowest = TRUE
+    )
   }
 
-  map_data <- dplyr::mutate(grid_winds,
-                             fips = as.numeric(.data$gridid)) %>%
-    dplyr::select(.data$fips, .data$value)
+  map_data <- grid_winds
+  map_data$fips <- as.numeric(map_data$gridid)
+  map_data <- map_data[c("fips", "value")]
 
-  county.fips <- maps::county.fips %>%
-    dplyr::mutate(polyname = as.character(.data$polyname)) %>%
-    dplyr::mutate(polyname = stringr::str_replace(.data$polyname, ":.+", ""))
-  us_counties <- ggplot2::map_data("county") %>%
-    dplyr::filter(!(.data$region %in% c("arizona", "california", "colorado", "idaho",
-                           "montana", "nebraska", "nevada", "new mexico",
-                           "north dakota", "oregon", "south dakota",
-                           "utah", "washington", "wyoming", "minnesota"))) %>%
-    tidyr::unite_(col = "polyname", from = c("region", "subregion"),
-                  sep = ",") %>%
-    dplyr::left_join(county.fips, by = "polyname") %>%
-    dplyr::left_join(map_data, by = "fips")
+  county.fips <- maps::county.fips
+  county.fips$polyname <- gsub(":.+", "", as.character(county.fips$polyname))
+  us_counties <- ggplot2::map_data("county")
+  us_counties <- us_counties[
+    !(us_counties$region %in% c("arizona", "california", "colorado", "idaho",
+                              "montana", "nebraska", "nevada", "new mexico",
+                              "north dakota", "oregon", "south dakota",
+                              "utah", "washington", "wyoming", "minnesota")),
+  ]
+  
+  us_counties$polyname <- paste(us_counties$region, us_counties$subregion, sep = ",")
+  us_counties[c("region", "subregion")] <- NULL
+  us_counties <- merge(us_counties, county.fips, by = "polyname", all.x = TRUE)
+  us_counties <- merge(us_counties, map_data, by = "fips", all.x = TRUE)
 
   out <- ggplot2::ggplot() +
     ggplot2::geom_polygon(data = us_counties,
-                 ggplot2::aes_(x = ~ long, y = ~ lat, group = ~ group,
-                               fill = ~ value),
+                 ggplot2::aes(x = .data$long, y = .data$lat, group = .data$group,
+                               fill = .data$value),
                  color = "lightgray", size = 0.2) +
     ggplot2::borders("state", regions = c("virginia", "north carolina", "south carolina",
                                  "georgia", "florida", "alabama", "kentucky",
@@ -178,13 +179,14 @@ add_storm_track <- function(storm_tracks, plot_object,
                        color = "firebrick"){
 
   map_data <- plot_object$data
-  tracks <- storm_tracks %>%
-    dplyr::select(.data$latitude, .data$longitude, .data$date) %>%
-    dplyr::filter(.data$longitude > -106.65 &
-                     .data$longitude < -67.01 &
-                     .data$latitude > 25.13 &
-                     .data$latitude < 47.48) %>%
-    dplyr::mutate(date = lubridate::ymd_hm(.data$date))
+  tracks <- storm_tracks[c("latitude", "longitudel", "date")]
+  tracks <- tracks[
+    tracks$longitude > -106.65 &
+      tracks$longitude < -67.01 &
+      tracks$latitude > 25.13 &
+      tracks$latitude < 47.48,
+  ]
+  tracks$date <- lubridate::ymd_hm(tracks$date)
 
   if(nrow(tracks) >= 3){
     full_tracks <- interp_track(tracks)
@@ -194,16 +196,16 @@ add_storm_track <- function(storm_tracks, plot_object,
 
   out <- plot_object +
     ggplot2::geom_path(data = full_tracks,
-                       ggplot2::aes_(x = ~ longitude,
-                                     y = ~ latitude,
+                       ggplot2::aes(x = .data$longitude,
+                                     y = .data$latitude,
                                      group = NULL),
                        alpha = alpha,
                        color = color)
 
   if(plot_points){
     out <- out + ggplot2::geom_point(data = tracks,
-                                     ggplot2::aes_(x = ~ longitude,
-                                                   y = ~ latitude,
+                                     ggplot2::aes(x = .data$longitude,
+                                                   y = .data$latitude,
                                                    group = NULL),
                                      alpha = alpha)
   }
