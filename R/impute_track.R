@@ -46,63 +46,63 @@
 #' # Interpolate to every half hour (instead of default 15 minutes)
 #' full_track <- create_full_track(hurr_track = floyd_tracks, tint = 0.5)
 #'
-#' @importFrom dplyr %>%
-#' @importFrom rlang .data
-#'
 #' @export
 create_full_track <- function(hurr_track = stormwindmodel::floyd_tracks,
                               tint = 0.25){
-  hurr_track <- dplyr::select(hurr_track, .data$date, .data$latitude,
-                               .data$longitude, .data$wind) %>%
-    dplyr::rename(vmax = .data$wind,
-                  tclat = .data$latitude,
-                  tclon = .data$longitude) %>%
-    dplyr::mutate(date = lubridate::ymd_hm(.data$date),
-                  tclat = as.numeric(.data$tclat),
-                  tclon = as.numeric(.data$tclon),
-                  vmax = weathermetrics::convert_wind_speed(.data$vmax, "knots",
-                                                            "mps", round = 3),
-                  track_time_simple = difftime(.data$date, dplyr::first(.data$date),
-                                               units = "hour"),
-                  track_time_simple = as.numeric(.data$track_time_simple))
-
+  hurr_track <- hurr_track[c("date", "latitude", "longitude", "wind")]
+  colnames(hurr_track) <- c("date", "tclat", "tclon", "vmax")
+  hurr_track$date <- lubridate::ymd_hm(hurr_track$date)
+  hurr_track$tclat <- as.numeric(hurr_track$tclat)
+  hurr_track$tclon <- as.numeric(hurr_track$tclon)
+  hurr_track$vmax <- weathermetrics::convert_wind_speed(
+    hurr_track$vmax,
+    "knots",
+    "mps",
+    round = 3
+  )
+  hurr_track$track_time_simple = as.numeric(
+    difftime(hurr_track$date, hurr_track$date[1], units = "hour")
+  )
+    
+    
   # Identify cases where a storm goes over the international date line, and
   # longitudes change from about 180 to about -180, or vice versa. Correct this
   # before interpolating (then later we get everything back within the 180 to -180
   # range).
-  if(diff(range(hurr_track$tclon)) > 300){
-    hurr_track <- hurr_track %>%
-      dplyr::mutate(tclon = ifelse(.data$tclon > 0, .data$tclon, .data$tclon + 360))
+  if (diff(range(hurr_track$tclon)) > 300) {
+    hurr_track$tclon <- ifelse(hurr_track$tclon > 0, hurr_track$tclon, hurr_track$tclon + 360)
   }
 
-  full_track <- hurr_track %>%
-    tidyr::nest(data = tidyr::everything()) %>%
-    # Create times to interpolate to
-    dplyr::mutate(interp_time = purrr::map(.data$data,
-                                           .f = ~ seq(from = dplyr::first(.x$track_time_simple),
-                                                      to = dplyr::last(.x$track_time_simple),
-                                                      by = tint))) %>%
-    # Interpolate latitude and longitude using natural cubic splines
-    dplyr::mutate(tclat = purrr::map2(.data$data, .data$interp_time,
-                                      .f = ~ interpolate_spline(x = .x$track_time_simple,
-                                                                y = .x$tclat,
-                                                                new_x = .y))) %>%
-    dplyr::mutate(tclon = purrr::map2(.data$data, .data$interp_time,
-                                      .f = ~ interpolate_spline(x = .x$track_time_simple,
-                                                                y = .x$tclon,
-                                                                new_x = .y))) %>%
-    # Interpolate max wind using linear interpolation
-    dplyr::mutate(vmax = purrr::map2(.data$data, .data$interp_time,
-                                     .f = ~ interpolate_line(x = .x$track_time_simple,
-                                                   y = .x$vmax,
-                                                   new_x = .y))) %>%
-    dplyr::mutate(date = purrr::map2(.data$data, .data$interp_time,
-                                    .f = ~ dplyr::first(.x$date) +
-                                      lubridate::seconds(3600 * .y))) %>%
-    dplyr::select(.data$date, .data$tclat, .data$tclon, .data$vmax) %>%
-    tidyr::unnest(.data$date:.data$vmax) %>%
-    # Make sure that longitude is between -180 and 180
-    dplyr::mutate(tclon = ((.data$tclon + 180) %% 360) - 180)
+  interp_time <- seq(
+    from = hurr_track$track_time_simple[[1]], 
+    to = hurr_track$track_time_simple[[nrow(hurr_track)]], 
+    by = tint
+  )
+  tclat <- sapply(interp_time, function(time_to_interp) {
+    interpolate_spline(
+      x = hurr_track$track_time_simple,
+      y = hurr_track$tclat,
+      new_x = time_to_interp
+    )
+  })
+  tclon <- sapply(interp_time, function(time_to_interp) {
+    interpolate_spline(
+      x = hurr_track$track_time_simple,
+      y = hurr_track$tclon,
+      new_x = time_to_interp
+    )
+  })
+  tclon <- ((tclon + 180) %% 360) - 180
+  vmax <- sapply(interp_time, function(time_to_interp) {
+    interpolate_line(
+      x = hurr_track$track_time_simple,
+      y = hurr_track$vmax,
+      new_x = time_to_interp
+    )
+  })
+  date <- hurr_track$date[1] + lubridate::seconds(3600 * interp_time)
+
+  full_track <- data.frame(date, tclat, tclon, vmax)
 
   return(full_track)
 }
