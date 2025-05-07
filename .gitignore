@@ -8,3 +8,4 @@ vignettes/stormwindmodel_cache
 vignettes/stormwindmodel_cache/*
 devel_scripts/*
 data-raw/ibtracs.since1980.list.v04r00.csv
+docs

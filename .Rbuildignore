@@ -14,3 +14,7 @@
 ^CRAN-RELEASE$
 ^old_vignettes/*$
 ^docs/*$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^\.github$
