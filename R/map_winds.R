@@ -179,7 +179,7 @@ add_storm_track <- function(storm_tracks, plot_object,
                        color = "firebrick"){
 
   map_data <- plot_object$data
-  tracks <- storm_tracks[c("latitude", "longitudel", "date")]
+  tracks <- storm_tracks[c("latitude", "longitude", "date")]
   tracks <- tracks[
     tracks$longitude > -106.65 &
       tracks$longitude < -67.01 &

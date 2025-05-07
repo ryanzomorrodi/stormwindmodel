@@ -135,11 +135,6 @@ use for plotting tracks.</p></dd>
 <span class="r-in"><span><span class="va">floyd_map</span> <span class="op">&lt;-</span> <span class="fu"><a href="map_wind.html">map_wind</a></span><span class="op">(</span><span class="va">grid_winds_floyd</span>, value <span class="op">=</span> <span class="st">"vmax_sust"</span>,</span></span>
 <span class="r-in"><span>                      wind_metric <span class="op">=</span> <span class="st">"knots"</span><span class="op">)</span> <span class="op">+</span></span></span>
 <span class="r-in"><span>             <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Maximum sustained wind speeds"</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`unite_()` was deprecated in tidyr 1.2.0.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Please use `unite()` instead.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> The deprecated feature was likely used in the <span style="color: #0000BB;">stormwindmodel</span> package.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span>   Please report the issue at</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span>   <span style="color: #0000BB; font-style: italic;">&lt;</span><a href="https://github.com/geanders/stormwindmodel/issues" class="external-link"><span style="color: #0000BB; font-style: italic;">https://github.com/geanders/stormwindmodel/issues</span></a><span style="color: #0000BB; font-style: italic;">&gt;</span>.</span>
 <span class="r-in"><span><span class="fu">add_storm_track</span><span class="op">(</span><span class="va">floyd_tracks</span>, plot_object <span class="op">=</span> <span class="va">floyd_map</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="add_storm_track-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>

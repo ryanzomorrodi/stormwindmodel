@@ -130,16 +130,20 @@ continuous profiles. Monthly Weather Review 134(4):1102-1120.</p>
 <span class="r-in"><span><span class="va">full_track</span> <span class="op">&lt;-</span> <span class="fu"><a href="create_full_track.html">create_full_track</a></span><span class="op">(</span>hurr_track <span class="op">=</span> <span class="va">floyd_tracks</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">with_wind_radii</span> <span class="op">&lt;-</span> <span class="fu">add_wind_radii</span><span class="op">(</span>full_track <span class="op">=</span> <span class="va">full_track</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">with_wind_radii</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 13</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   date                tclat tclon tcdir tcspd_u tcspd_v vmax_gl  Rmax    X1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> 1999-09-07 <span style="color: #949494;">18:00:00</span>  14.6 -<span style="color: #BB0000;">45.6</span>  161.   -<span style="color: #BB0000;">6.51</span>    2.27    10.5  50.5  324.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> 1999-09-07 <span style="color: #949494;">18:15:00</span>  14.6 -<span style="color: #BB0000;">45.7</span>  161.   -<span style="color: #BB0000;">6.51</span>    2.27    10.6  50.4  324.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> 1999-09-07 <span style="color: #949494;">18:30:00</span>  14.6 -<span style="color: #BB0000;">45.7</span>  161.   -<span style="color: #BB0000;">6.51</span>    2.26    10.7  50.3  323.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> 1999-09-07 <span style="color: #949494;">18:45:00</span>  14.7 -<span style="color: #BB0000;">45.8</span>  161.   -<span style="color: #BB0000;">6.51</span>    2.26    10.8  50.3  323.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> 1999-09-07 <span style="color: #949494;">19:00:00</span>  14.7 -<span style="color: #BB0000;">45.8</span>  161.   -<span style="color: #BB0000;">6.51</span>    2.25    10.9  50.2  323.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> 1999-09-07 <span style="color: #949494;">19:15:00</span>  14.7 -<span style="color: #BB0000;">45.9</span>  161.   -<span style="color: #BB0000;">6.50</span>    2.24    11.1  50.1  323.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 4 more variables: n &lt;dbl&gt;, A &lt;dbl&gt;, R1 &lt;dbl&gt;, R2 &lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                  date    tclat     tclon    tcdir   tcspd_u  tcspd_v  vmax_gl</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 1999-09-07 18:00:00 14.60000 -45.60000 160.7715 -6.510216 2.270724 10.45952</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 1999-09-07 18:15:00 14.61835 -45.65439 160.7863 -6.509378 2.268546 10.57943</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 1999-09-07 18:30:00 14.63669 -45.70879 160.8174 -6.508274 2.264199 10.69988</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 1999-09-07 18:45:00 14.65499 -45.76317 160.8649 -6.506877 2.257674 10.82088</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 1999-09-07 19:00:00 14.67323 -45.81756 160.9287 -6.505188 2.248970 10.94242</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 1999-09-07 19:15:00 14.69141 -45.87193 161.0090 -6.503234 2.238097 11.06449</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       Rmax       X1         n          A       R1       R2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 50.49715 323.8680 0.5018371 0.02741166 35.19583 60.19583</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 50.41901 323.6602 0.5034941 0.02788177 35.10915 60.10915</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 50.34057 323.4513 0.5051589 0.02835462 35.02214 60.02214</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 50.26179 323.2412 0.5068317 0.02883039 34.93479 59.93479</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 50.18266 323.0299 0.5085126 0.02930918 34.84708 59.84708</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 50.10319 322.8174 0.5102013 0.02979099 34.75901 59.75901</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

@@ -265,14 +265,6 @@ the maximum sustained wind in each county during the storm in meters per
 second:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/map_wind.html">map_wind</a></span><span class="op">(</span><span class="va">floyd_winds</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning: `unite_()` was deprecated in tidyr 1.2.0.</span></span>
-<span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Please use `unite()` instead.</span></span>
-<span><span class="co">## <span style="color: #00BBBB;">ℹ</span> The deprecated feature was likely used in the <span style="color: #0000BB;">stormwindmodel</span> package.</span></span>
-<span><span class="co">##   Please report the issue at</span></span>
-<span><span class="co">##   <span style="color: #0000BB; font-style: italic;">&lt;https://github.com/geanders/stormwindmodel/issues&gt;</span>.</span></span>
-<span><span class="co">## <span style="color: #555555;">This warning is displayed once every 8 hours.</span></span></span>
-<span><span class="co">## <span style="color: #555555;">Call `lifecycle::last_lifecycle_warnings()` to see where this warning was</span></span></span>
-<span><span class="co">## <span style="color: #555555;">generated.</span></span></span></code></pre>
 <p><img src="Overview_files/figure-html/unnamed-chunk-5-1.png"><!-- --></p>
 </div>
 <div class="section level3">
@@ -314,7 +306,7 @@ States.</p>
 <p>First, the <code>tigris</code> package can be used to pull US Census
 tract shapefiles for a county. You can use the following code to pull
 these census tract file shapefiles for Orleans Parish in Louisiana:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/walkerke/tigris" class="external-link">tigris</a></span><span class="op">)</span></span>
 <span><span class="va">new_orleans</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tigris/man/tracts.html" class="external-link">tracts</a></span><span class="op">(</span>state <span class="op">=</span> <span class="st">"LA"</span>, county <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Orleans"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>glandsea <span class="op">=</span> <span class="va">ALAND</span> <span class="op">&gt;</span> <span class="va">AWATER</span><span class="op">)</span></span></code></pre></div>
@@ -325,7 +317,7 @@ greater than its water area and over water if not.</p>
 <p>This shapefile gives the polygon for each census tract. You can use
 the <code>st_centroid</code> function from the <code>sf</code> package
 to determine the location of the center of each census tract:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
 <span><span class="va">new_orleans_tract_centers</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html" class="external-link">st_centroid</a></span><span class="op">(</span><span class="va">new_orleans</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">new_orleans_tract_centers</span><span class="op">)</span></span></code></pre></div>
@@ -361,7 +353,7 @@ the geo id from the original shapefiles as the grid id, as this will
 help you map the modeled wind results. You can also extract the latitude
 and longitude from the geometry of the <code>sf</code> object and put
 them in separate columns, as needed for the wind modeling code:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">new_orleans_tract_centers2</span> <span class="op">&lt;-</span> <span class="va">new_orleans_tract_centers</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>glon <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">.</span><span class="op">$</span><span class="va">geometry</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>         glat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">.</span><span class="op">$</span><span class="va">geometry</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
@@ -378,7 +370,7 @@ them in separate columns, as needed for the wind modeling code:</p>
 <span><span class="co">## 601 22071000800 29.95964 -90.01988     TRUE</span></span></code></pre>
 <p>Here is a map of the census tracts, with the center point of each
 shown with a red dot:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">new_orleans</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">glandsea</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
@@ -389,7 +381,7 @@ shown with a red dot:</p>
 appropriate format to use with the <code>stormwindmodel</code>
 functions, you can input it directly into <code>get_grid_winds</code> to
 model the winds from Hurricane Katrina at each census tract center:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">new_orleans_tracts_katrina</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_grid_winds.html">get_grid_winds</a></span><span class="op">(</span>hurr_track <span class="op">=</span> <span class="va">katrina_tracks</span>, </span>
 <span>                                             grid_df <span class="op">=</span> <span class="va">new_orleans_tract_centers2</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">new_orleans_tracts_katrina</span><span class="op">)</span></span></code></pre></div>
@@ -406,10 +398,10 @@ model the winds from Hurricane Katrina at each census tract center:</p>
 into the “sf” version of the census tract shapefile data, joining by geo
 identification, and then add to the map. You can show wind speed in this
 map with color.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">new_orleans</span> <span class="op">&lt;-</span> <span class="va">new_orleans</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">new_orleans_tracts_katrina</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"GEOID"</span> <span class="op">=</span> <span class="st">"gridid"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://sjmgarnier.github.io/viridis/" class="external-link">viridis</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">new_orleans</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">vmax_sust</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
@@ -430,7 +422,7 @@ the storm at each location you are modeling.</p>
 <p>For example, you can use <code>calc_grid_winds</code> to calculate
 the full time series of winds during Hurricane Floyd at the US county
 centers in the eastern US:</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"floyd_tracks"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"county_points"</span><span class="op">)</span></span>
 <span></span>
@@ -462,7 +454,7 @@ estimate and the column names give the grid ID (in this case, the county
 FIPS code). Here’s an example of a subset of the wind matrix for some
 counties in North Carolina around the time of highest winds in the
 state:</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">floyd_timeseries_winds</span><span class="op">[[</span><span class="st">"vmax_sust"</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="fl">830</span><span class="op">:</span><span class="fl">840</span>, <span class="fl">1400</span><span class="op">:</span><span class="fl">1410</span><span class="op">]</span></span></code></pre></div>
 <pre><code><span><span class="co">##                        37021    37023     37025    37027    37029    37031</span></span>
 <span><span class="co">## 1999-09-16 09:15:00 5.721721 7.656765 11.278906 7.828813 15.66919 33.99837</span></span>
@@ -494,7 +486,7 @@ if you want to see how winds changed over the course of the storm at
 that time point. For example, here is the code to extract and show
 modeled wind at the population mean center of Dare County, NC (FIPS:
 37055) throughout Hurricane Floyd:</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://lubridate.tidyverse.org" class="external-link">lubridate</a></span><span class="op">)</span></span>
 <span><span class="va">dare_winds</span> <span class="op">&lt;-</span> <span class="va">floyd_timeseries_winds</span><span class="op">[[</span><span class="st">"vmax_sust"</span><span class="op">]</span><span class="op">]</span><span class="op">[</span> , <span class="st">"37055"</span><span class="op">]</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/enframe.html" class="external-link">enframe</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"date"</span>, value <span class="op">=</span> <span class="st">"windspeed"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
@@ -520,7 +512,7 @@ argument. In this example code, we’ve first created the base map of
 modeled winds in each county using <code>map_wind</code>. We then input
 that, along with Floyd’s track data, into <code>add_storm_track</code>
 to create a map with both winds and the storm tracks:</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">floyd_map</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/map_wind.html">map_wind</a></span><span class="op">(</span><span class="va">floyd_winds</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/add_storm_track.html">add_storm_track</a></span><span class="op">(</span><span class="va">floyd_tracks</span>, plot_object <span class="op">=</span> <span class="va">floyd_map</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Overview_files/figure-html/unnamed-chunk-16-1.png"><!-- --></p>
@@ -530,14 +522,14 @@ as the unit to use for wind speed (<code>wind_metric</code>, which can
 take values of “mps” for meters per second [the default] or “knots”).
 For example, you can modeled gust wind speeds in knots during Hurricane
 Floyd using:</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/map_wind.html">map_wind</a></span><span class="op">(</span><span class="va">floyd_winds</span>, value <span class="op">=</span> <span class="st">"vmax_gust"</span>, wind_metric <span class="op">=</span> <span class="st">"knots"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Overview_files/figure-html/unnamed-chunk-17-1.png"><!-- --></p>
 <p>Finally, you can map a binary classification of counties with winds
 at or above a certain break point. For example, to map counties with
 sustained wind at or above 34 knots during Hurricane Floyd, you can
 run:</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/map_wind.html">map_wind</a></span><span class="op">(</span><span class="va">floyd_winds</span>, value <span class="op">=</span> <span class="st">"vmax_sust"</span>, wind_metric <span class="op">=</span> <span class="st">"knots"</span>, break_point <span class="op">=</span> <span class="fl">34</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Overview_files/figure-html/unnamed-chunk-18-1.png"><!-- --></p>
 </div>
