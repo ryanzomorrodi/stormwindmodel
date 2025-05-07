@@ -15,10 +15,6 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-```{r message = FALSE, echo = FALSE}
-library(tidyverse)
-```
-
 ## Overview
 
 The `stormwindmodel` package was created to allow users to model wind speeds at grid points around the world based on "best tracks" hurricane tracking data, using a model for wind speed developed by Willoughby and coauthors [-@willoughby2006parametric]. The package includes functions for interpolating hurricane tracks and for modeling and mapping wind speeds during the storm. For the US, it includes population mean center locations for all counties, which can be used to map winds by county; however, other grid point locations can also be input for modeling, either to model at other resolutions in the US or to model in other locations around the world. Full details on how this model is fit are provided in the "Details" vignette of the `stormwindmodel` package.
@@ -29,6 +25,7 @@ For examples in this vignette, the package includes data on the tracks of Hurric
 
 ```{r}
 library(stormwindmodel)
+
 data("floyd_tracks")
 head(floyd_tracks)
 data("katrina_tracks")
@@ -66,10 +63,12 @@ The main function of this package is `get_grid_winds`. It inputs storm tracks fo
 For example, to get modeled winds for Hurricane Floyd at U.S. county centers, you can run: 
 
 ```{r}
+library(dplyr)
+
 floyd_winds <- get_grid_winds(hurr_track = floyd_tracks, grid_df = county_points)
 floyd_winds %>%
-  dplyr::select(gridid, vmax_gust, vmax_sust, gust_dur, sust_dur) %>%
-  slice(1:6)
+  select(gridid, vmax_gust, vmax_sust, gust_dur, sust_dur) %>%
+  head()
 ```
 
 If you use the `county_points` data for the `grid_df` argument, you will model winds for eastern U.S. county centers. In this case, the `gridid` is the county FIPS. If you model winds at U.S. county centers, you can map the results using the `map_wind` function. By default, this function maps the maximum sustained wind in each county during the storm in meters per second: 
@@ -97,7 +96,8 @@ First, the `tigris` package can be used to pull US Census tract shapefiles for a
 
 ```{r results = "hide", message = FALSE, warning = FALSE}
 library(tigris)
-new_orleans <- tracts(state = "LA", county = c("Orleans")) %>% 
+
+new_orleans <- tracts(state = "LA", county = "Orleans") %>% 
   mutate(glandsea = ALAND > AWATER)
 ```
 
@@ -109,6 +109,7 @@ This shapefile gives the polygon for each census tract. You can use the `st_cent
 
 ```{r message = FALSE, warning = FALSE}
 library(sf)
+
 new_orleans_tract_centers <- st_centroid(new_orleans)
 head(new_orleans_tract_centers)
 ```
@@ -129,6 +130,7 @@ Here is a map of the census tracts, with the center point of each shown with a r
 
 ```{r fig.width = 7}
 library(ggplot2)
+
 ggplot() + 
   geom_sf(data = new_orleans, aes(fill = glandsea)) + 
   geom_sf(data = new_orleans_tract_centers, color = "red", size = 0.6) + 
@@ -152,6 +154,7 @@ new_orleans <- new_orleans %>%
 
 ```{r, fig.width = 7, message = FALSE, warning = FALSE}
 library(viridis)
+
 ggplot() + 
   geom_sf(data = new_orleans, aes(fill = vmax_sust)) + 
   scale_fill_viridis(name = "Maximum\nsustained\nwinds (m/s)")
@@ -199,7 +202,9 @@ here is the code to extract and show modeled wind at the population mean center
 of Dare County, NC (FIPS: 37055) throughout Hurricane Floyd:
 
 ```{r warning = FALSE, message = FALSE, fig.width = 6, fig.height = 2.5}
+library(tibble)
 library(lubridate)
+
 dare_winds <- floyd_timeseries_winds[["vmax_sust"]][ , "37055"] %>% 
   enframe(name = "date", value = "windspeed") %>% 
   mutate(date = ymd_hms(date))
@@ -222,7 +227,7 @@ floyd_map <- map_wind(floyd_winds)
 add_storm_track(floyd_tracks, plot_object = floyd_map)
 ```
 
-You can choose whether to map sustained or gust winds (`value`, which can take "vmax_gust" or "vmax_sust"), as well as the unit to use for wind speed (`wind_metric`, which can take values of "mps" for meters per second [the default] or "knots"). For example, you can modeled gust wind speeds in knots during Hurricane Floyd using:
+You can choose whether to map sustained or gust winds (`value`, which can take "vmax_gust" or "vmax_sust"), as well as the unit to use for wind speed (`wind_metric`, which can take values of "m/s" for meters per second [the default] or "knots"). For example, you can modeled gust wind speeds in knots during Hurricane Floyd using:
 
 ```{r fig.width = 8}
 map_wind(floyd_winds, value = "vmax_gust", wind_metric = "knots")

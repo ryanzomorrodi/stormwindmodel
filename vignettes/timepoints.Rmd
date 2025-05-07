@@ -18,7 +18,9 @@ knitr::opts_chunk$set(
 library(stormwindmodel)
 library(rnaturalearth)
 library(sf)
-library(tidyverse)
+library(tibble)
+library(dplyr)
+library(tidyr)
 library(lubridate)
 library(viridis)
 ```
@@ -112,6 +114,8 @@ hk_winds
 ```
 
 ```{r fig.width = 8, fig.height = 4}
+library(ggplot2)
+
 ggplot(hk_winds, aes(x = date, y = vmax_sust)) + 
   geom_point()
 ```

@@ -18,7 +18,7 @@
 #'    binary classifications of "exposed" or "not exposed" based on whether
 #'    modeled wind speed for the county is above or below this break point.
 #' @param wind_metric A character vector with the wind metric to use for the map.
-#'    Possible values are \code{"knots"} and \code{"mps"} (m / s, the default).
+#'    Possible values are \code{"knots"} and \code{"m/s"} (m/s, the default).
 #'
 #' @return This function returns a map of the \code{ggplot} class, plotting
 #'    exposure to hurricane winds by county for the eastern half of the United
@@ -37,13 +37,13 @@
 #'
 #' @export
 map_wind <- function(grid_winds, value = "vmax_sust", break_point = NULL,
-                     wind_metric = "mps"){
+                     wind_metric = "m/s"){
 
   grid_winds[ , "value"] <- grid_winds[ , value]
-  if(wind_metric != "mps"){
-    grid_winds[ , "value"] <- weathermetrics::convert_wind_speed(grid_winds$value,
-                                                           old_metric = "mps",
-                                                           new_metric = wind_metric)
+  if(wind_metric != "m/s"){
+    grid_winds[ , "value"] <- units::set_units(grid_winds$value, "m/s") |>
+      units::set_units(wind_metric, mode = "standard") |>
+      as.numeric()
   }
 
   if(!is.null(break_point)){
@@ -53,7 +53,7 @@ map_wind <- function(grid_winds, value = "vmax_sust", break_point = NULL,
     grid_winds$value <- cut_values
     num_colors <- 2
   } else {
-    if(wind_metric == "mps"){
+    if(wind_metric == "m/s"){
       breaks <- c(0, seq(15, 45, 5))
       exposure_palette <- c("#FEE5D9", "#FCBBA1", "#FC9272", "#FB6A4A",
                             "#DE2D26", "#A50F15")
@@ -119,7 +119,7 @@ map_wind <- function(grid_winds, value = "vmax_sust", break_point = NULL,
     ggplot2::coord_map()
 
   exposure_legend <- paste0("Wind speed (",
-                            ifelse(wind_metric == "mps", "m / s",
+                            ifelse(wind_metric == "m/s", "m / s",
                                    wind_metric),
                             ")")
 
@@ -186,7 +186,7 @@ add_storm_track <- function(storm_tracks, plot_object,
       tracks$latitude > 25.13 &
       tracks$latitude < 47.48,
   ]
-  tracks$date <- lubridate::ymd_hm(tracks$date)
+  tracks$date <- as.POSIXct(tracks$date, format = "%Y%m%d%H%M")
 
   if(nrow(tracks) >= 3){
     full_tracks <- interp_track(tracks)

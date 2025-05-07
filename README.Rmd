@@ -15,12 +15,6 @@ knitr::opts_chunk$set(
 
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/stormwindmodel)](https://cran.r-project.org/package=stormwindmodel)
 
-
-```{r message = FALSE, echo = FALSE}
-library(dplyr)
-```
-
-
 ## Overview
 
 The `stormwindmodel` package was created to allow users to model wind speeds at grid points in the United States based on "best tracks" hurricane tracking data, using a model for wind speed developed by Willoughby and coauthors [-@willoughby2006parametric]. The package includes functions for interpolating hurricane tracks and for modeling and mapping wind speeds during the storm. It includes population mean center locations for all U.S. counties, which can be used to map winds by county; however, other grid point locations can also be input for modeling. Full details on how this model is fit are provided in the "Details" vignette of the `stormwindmodel` package.
@@ -37,6 +31,7 @@ For examples, the package includes data on the tracks of Hurricane Floyd in 1999
 
 ```{r}
 library(stormwindmodel)
+
 data("floyd_tracks")
 head(floyd_tracks)
 data("katrina_tracks")
@@ -72,11 +67,15 @@ The main function of this package is `get_grid_winds`. It inputs storm tracks fo
 To get modeled winds for Hurricane Floyd at U.S. county centers, you can run:
 
 ```{r}
-floyd_winds <- get_grid_winds(hurr_track = floyd_tracks,
-                              grid_df = county_points)
+library(dplyr)
+
+floyd_winds <- get_grid_winds(
+  hurr_track = floyd_tracks,
+  grid_df = county_points
+)
 floyd_winds %>%
-  dplyr::select(gridid, vmax_gust, vmax_sust, gust_dur, sust_dur) %>%
-  slice(1:6)
+  select(gridid, vmax_gust, vmax_sust, gust_dur, sust_dur) %>%
+  head()
 ```
 
 If you use the `county_points` data that comes with the package for the `grid_df` argument, you will model winds for county centers. In this case, the `gridid` is a county FIPS, and the `stormwindmodel` package has a function called `map_wind` for mapping the estimated winds for each county. By default, it maps the maximum sustained wind in each county during the storm in meters per second. 
@@ -138,8 +137,10 @@ new_orleans_centers <- bind_cols(
   mutate(glandsea = mapply(check_over_land, glat, glon)) %>%
   st_drop_geometry()
 
-new_orleans_tracts_katrina <- get_grid_winds(hurr_track = katrina_tracks, 
-                                             grid_df = new_orleans_centers)
+new_orleans_tracts_katrina <- get_grid_winds(
+  hurr_track = katrina_tracks, 
+  grid_df = new_orleans_centers
+)
 head(new_orleans_tracts_katrina)
 ```
 
@@ -191,7 +192,7 @@ floyd_map <- map_wind(floyd_winds)
 add_storm_track(floyd_tracks, plot_object = floyd_map)
 ```
 
-You can also choose whether to map sustained or gust winds (`value`, which can take "vmax_gust" or "vmax_sust"), as well as the unit to use for wind speed (`wind_metric`, which can take values of "mps" [the default] or "knots"). 
+You can also choose whether to map sustained or gust winds (`value`, which can take "vmax_gust" or "vmax_sust"), as well as the unit to use for wind speed (`wind_metric`, which can take values of "m/s" [the default] or "knots"). 
 
 ```{r fig.width = 8}
 map_wind(floyd_winds, value = "vmax_gust", wind_metric = "knots")
@@ -200,8 +201,7 @@ map_wind(floyd_winds, value = "vmax_gust", wind_metric = "knots")
 Finally, you can map a binary classification of counties with winds at or above a certain break point. For example, to map counties with sustained wind at or above 34 knots during the storm, you can run: 
 
 ```{r fig.width = 8}
-map_wind(floyd_winds, value = "vmax_sust", wind_metric = "knots",
-         break_point = 34)
+map_wind(floyd_winds, value = "vmax_sust", wind_metric = "knots", break_point = 34)
 ```
 
 ## Tracks data
@@ -220,10 +220,10 @@ library(hurricaneexposuredata)
 data("hurr_tracks")
 hurr_tracks %>% 
   tidyr::separate(storm_id, c("storm", "year")) %>%
-  dplyr::select(storm, year) %>%
-  dplyr::distinct() %>%
-  dplyr::group_by(year) %>% 
-  dplyr::summarize(storms = paste(storm, collapse = ", ")) %>% 
+  select(storm, year) %>%
+  distinct() %>%
+  group_by(year) %>% 
+  summarize(storms = paste(storm, collapse = ", ")) %>% 
   knitr::kable()
 ```
 

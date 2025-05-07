@@ -70,7 +70,10 @@ test_that("Interpolation works for Western Pacific storm", {
   expected_interp_longs <- c(145.80, 145.51, 144.90, 144.64, 144.50,
                              144.44, 144.40, 144.31, 144.10)
   expected_interp_vmax <- c(25, 30, 35, 35, 35, 37, 39, 39, 39) |>
-    weathermetrics::knots_to_speed(unit = "mps", round = 1)
+    units::set_units("knots") |>
+    units::set_units("m/s") |> 
+    as.numeric() |>
+    round(1)
 
   expect_equal(round(interp_track_1$tclat), round(expected_interp_lats))
   expect_equal(round(interp_track_1$tclon), round(expected_interp_longs))
@@ -119,7 +122,10 @@ test_that("Interpolation works with IBTrACS convention across international date
                              -169.23, -167.70)
   expected_interp_vmax <- c(109, 109, 109, 114, 119, 119, 119, 117, 115, 112,
                             109, 109, 109, 101, 93, 86, 80) |>
-    weathermetrics::knots_to_speed(unit = "mps", round = 1)
+    units::set_units("knots") |>
+    units::set_units("m/s") |>
+    as.numeric() |>
+    round(1)
 
   expect_equal(round(interp_track_1$tclat), round(expected_interp_lats))
   expect_equal(round(interp_track_1$tclon), round(expected_interp_longs))

@@ -31,6 +31,7 @@ tracks data sets using:
 
 ``` r
 library(stormwindmodel)
+
 data("floyd_tracks")
 head(floyd_tracks)
 #> # A tibble: 6 × 4
@@ -120,11 +121,23 @@ To get modeled winds for Hurricane Floyd at U.S. county centers, you can
 run:
 
 ``` r
-floyd_winds <- get_grid_winds(hurr_track = floyd_tracks,
-                              grid_df = county_points)
+library(dplyr)
+#> 
+#> Attaching package: 'dplyr'
+#> The following objects are masked from 'package:stats':
+#> 
+#>     filter, lag
+#> The following objects are masked from 'package:base':
+#> 
+#>     intersect, setdiff, setequal, union
+
+floyd_winds <- get_grid_winds(
+  hurr_track = floyd_tracks,
+  grid_df = county_points
+)
 floyd_winds %>%
-  dplyr::select(gridid, vmax_gust, vmax_sust, gust_dur, sust_dur) %>%
-  slice(1:6)
+  select(gridid, vmax_gust, vmax_sust, gust_dur, sust_dur) %>%
+  head()
 #> # A tibble: 6 × 5
 #>   gridid vmax_gust vmax_sust gust_dur sust_dur
 #>   <chr>      <dbl>     <dbl>    <dbl>    <dbl>
@@ -147,7 +160,7 @@ county during the storm in meters per second.
 map_wind(floyd_winds)
 ```
 
-![](man/figures/README-unnamed-chunk-7-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-6-1.png)<!-- -->
 
 ## Further functionality
 
@@ -233,7 +246,7 @@ ggplot() +
   geom_sf(data = new_orleans_tract_centers, color = "red", size = 0.6)
 ```
 
-![](man/figures/README-unnamed-chunk-10-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-9-1.png)<!-- -->
 
 Since the `new_orleans_tract_centers` is a `sf` object, we will need to
 format it for use with the `stormwindmodel` functions. After it has been
@@ -249,18 +262,20 @@ new_orleans_centers <- bind_cols(
   mutate(glandsea = mapply(check_over_land, glat, glon)) %>%
   st_drop_geometry()
 
-new_orleans_tracts_katrina <- get_grid_winds(hurr_track = katrina_tracks, 
-                                             grid_df = new_orleans_centers)
+new_orleans_tracts_katrina <- get_grid_winds(
+  hurr_track = katrina_tracks, 
+  grid_df = new_orleans_centers
+)
 head(new_orleans_tracts_katrina)
 #> # A tibble: 6 × 6
-#>   gridid date_time_max_wind  vmax_sust vmax_gust sust_dur gust_dur
-#>   <chr>  <dttm>                  <dbl>     <dbl>    <dbl>    <dbl>
-#> 1 001758 2005-08-29 13:30:00      56.2      83.8      900     1335
-#> 2 000617 2005-08-29 13:30:00      41.0      61.0      705     1125
-#> 3 001748 2005-08-29 13:30:00      40.2      59.9      690     1110
-#> 4 001747 2005-08-29 13:30:00      39.9      59.5      690     1110
-#> 5 001750 2005-08-29 13:30:00      41.3      61.5      690     1110
-#> 6 000800 2005-08-29 13:30:00      39.2      58.5      705     1110
+#>   gridid date_time_max_wind vmax_sust vmax_gust sust_dur gust_dur
+#>   <chr>  <dttm>                 <dbl>     <dbl>    <dbl>    <dbl>
+#> 1 001758 NA                      56.2      83.8      900     1335
+#> 2 000617 NA                      41.0      61.0      705     1125
+#> 3 001748 NA                      40.2      59.9      690     1110
+#> 4 001747 NA                      39.9      59.5      690     1110
+#> 5 001750 NA                      41.3      61.5      690     1110
+#> 6 000800 NA                      39.2      58.5      705     1110
 ```
 
 To plot these modeled winds, you can merge this modeled data back into
@@ -282,7 +297,7 @@ ggplot() +
   scale_fill_viridis(name = "Maximum\nsustained\nwinds (m/s)")
 ```
 
-![](man/figures/README-unnamed-chunk-13-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-12-1.png)<!-- -->
 
 There are also functions in this package that you can use to create a
 time series of all modeled winds at a specific grid point throughout the
@@ -307,7 +322,7 @@ ggplot(dare_winds, aes(x = date, y = windspeed)) +
   ylab("Modeled surface wind (m / s)") 
 ```
 
-![](man/figures/README-unnamed-chunk-14-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-13-1.png)<!-- -->
 
 For more details, see the “Details” vignette, which walks through all
 steps of the modeling process.
@@ -330,29 +345,28 @@ floyd_map <- map_wind(floyd_winds)
 add_storm_track(floyd_tracks, plot_object = floyd_map)
 ```
 
-![](man/figures/README-unnamed-chunk-15-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-14-1.png)<!-- -->
 
 You can also choose whether to map sustained or gust winds (`value`,
 which can take “vmax_gust” or “vmax_sust”), as well as the unit to use
-for wind speed (`wind_metric`, which can take values of “mps” \[the
+for wind speed (`wind_metric`, which can take values of “m/s” \[the
 default\] or “knots”).
 
 ``` r
 map_wind(floyd_winds, value = "vmax_gust", wind_metric = "knots")
 ```
 
-![](man/figures/README-unnamed-chunk-16-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-15-1.png)<!-- -->
 
 Finally, you can map a binary classification of counties with winds at
 or above a certain break point. For example, to map counties with
 sustained wind at or above 34 knots during the storm, you can run:
 
 ``` r
-map_wind(floyd_winds, value = "vmax_sust", wind_metric = "knots",
-         break_point = 34)
+map_wind(floyd_winds, value = "vmax_sust", wind_metric = "knots", break_point = 34)
 ```
 
-![](man/figures/README-unnamed-chunk-17-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-16-1.png)<!-- -->
 
 ## Tracks data
 
@@ -372,10 +386,10 @@ library(hurricaneexposuredata)
 data("hurr_tracks")
 hurr_tracks %>% 
   tidyr::separate(storm_id, c("storm", "year")) %>%
-  dplyr::select(storm, year) %>%
-  dplyr::distinct() %>%
-  dplyr::group_by(year) %>% 
-  dplyr::summarize(storms = paste(storm, collapse = ", ")) %>% 
+  select(storm, year) %>%
+  distinct() %>%
+  group_by(year) %>% 
+  summarize(storms = paste(storm, collapse = ", ")) %>% 
   knitr::kable()
 #> Warning: Expected 2 pieces. Additional pieces discarded in 27 rows [3313, 3314, 3315,
 #> 3316, 3317, 3318, 3319, 3320, 3321, 3322, 3323, 3324, 3325, 3326, 3327, 3328,

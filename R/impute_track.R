@@ -51,15 +51,14 @@ create_full_track <- function(hurr_track = stormwindmodel::floyd_tracks,
                               tint = 0.25){
   hurr_track <- hurr_track[c("date", "latitude", "longitude", "wind")]
   colnames(hurr_track) <- c("date", "tclat", "tclon", "vmax")
-  hurr_track$date <- lubridate::ymd_hm(hurr_track$date)
+  hurr_track$date <- as.POSIXct(hurr_track$date, format = "%Y%m%d%H%M")
   hurr_track$tclat <- as.numeric(hurr_track$tclat)
   hurr_track$tclon <- as.numeric(hurr_track$tclon)
-  hurr_track$vmax <- weathermetrics::convert_wind_speed(
-    hurr_track$vmax,
-    "knots",
-    "mps",
-    round = 3
-  )
+  hurr_track$vmax <- units::set_units(hurr_track$vmax, "knots") |>
+    units::set_units("m/s") |>
+    as.numeric() |>
+    round(3)
+    
   hurr_track$track_time_simple = as.numeric(
     difftime(hurr_track$date, hurr_track$date[1], units = "hour")
   )
@@ -100,7 +99,7 @@ create_full_track <- function(hurr_track = stormwindmodel::floyd_tracks,
       new_x = time_to_interp
     )
   })
-  date <- hurr_track$date[1] + lubridate::seconds(3600 * interp_time)
+  date <- hurr_track$date[1] + (3600 * interp_time)
 
   full_track <- data.frame(date, tclat, tclon, vmax)
 

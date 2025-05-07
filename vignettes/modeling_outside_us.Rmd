@@ -59,7 +59,7 @@ focusing on an area affected by Typhoon Saomai in 2006:
 ```{r fig.width = 6, fig.height = 5, message = FALSE, warning = FALSE}
 library(rnaturalearth)
 library(sf)
-library(tidyverse)
+library(ggplot2)
 
 all_countries <-  ne_countries(scale = "medium", 
                                   returnclass = "sf")
@@ -88,11 +88,13 @@ layers, with transparency for the fill in the polygons (`alpha = 0.4`) so you ca
 all layers:
 
 ```{r fig.width = 6, fig.height = 5}
+library(dplyr)
 
 grid_near_landfall <- near_landfall %>% 
   st_make_grid(what = "polygons", square = FALSE, cellsize = 0.25) %>% 
   st_sf() %>% 
   mutate(gridid = as.character(1:n()))
+
 points_near_landfall <- near_landfall %>% 
   st_make_grid(what = "centers", square = FALSE, cellsize = 0.25) %>% 
   st_sf() %>% 
@@ -228,6 +230,7 @@ modeled_near_landfall %>%
 
 ```{r fig.width = 6, fig.height = 5}
 library(viridis)
+
 ggplot() + 
   geom_sf(data = modeled_near_landfall, aes(color = vmax_sust, fill = vmax_sust)) + 
   geom_sf(data = all_countries, fill = NA, color = "white") + 
@@ -292,8 +295,7 @@ grid points.
 ```{r fig.width = 6, fig.height = 5}
 data("mangkhut_tracks")
 
-all_countries <-  ne_countries(scale = "medium", 
-                                  returnclass = "sf")
+all_countries <- ne_countries(scale = "medium")
 near_landfall <- all_countries %>% 
   st_make_valid() %>% 
   st_crop(y = st_bbox(c(xmin = 110, xmax = 117, ymin = 19, ymax = 25)))

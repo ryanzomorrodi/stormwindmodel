@@ -384,7 +384,7 @@ summarize_grid_winds <- function(grid_winds,
     NA, 
     grid_wind_summary$date_time_max_wind
   )
-  grid_wind_summary$date_time_max_wind <- lubridate::ymd_hms(grid_wind_summary$date_time_max_wind)
+  grid_wind_summary$date_time_max_wind <- as.POSIXct(grid_wind_summary$date_time_max_wind, format = "%Y%m%d%H%M")
 
   return(grid_wind_summary)
 }
