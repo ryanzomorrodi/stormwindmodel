@@ -1,3 +1,5 @@
+# stormwindmodel (development version)
+
 # stormwindmodel 0.1.4
 
 * Resolve a warning on CRAN when building vignettes. Due to a change in 
