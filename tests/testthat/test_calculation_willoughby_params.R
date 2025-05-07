@@ -1,4 +1,3 @@
-
 test_that("Calculation of radius to maximum winds (Rmax, Will. eq. 7a) is reasonable", {
   # X1 will typically be between 200 km and 400 km, almost always between 0 km and 500 km
   expect_equal(round(will7a(vmax_gl = 30, tclat = 25), 1), 44.5)
@@ -100,18 +99,16 @@ test_that("Calculation of R1 is correct", {
 })
 
 test_that("Calculated parameters are reasonable for a sample N. Atlantic storm", {
-  library(hurricaneexposuredata)
-  data(hurr_tracks)
-
+  hurr_tracks <- hurricaneexposuredata::hurr_tracks
+  
   sample_storm <- sample(unique(hurr_tracks$storm_id), 1)
   print(paste("Sample storm:", sample_storm))
 
-  sample_storm_params <- hurr_tracks %>%
-    filter(storm_id == sample_storm) %>%
-    create_full_track() %>%
-    add_wind_radii() %>%
-    # Last line has some missing values, so remove it for checks
-    slice(1:(n()-1))
+  sample_storm_params <- hurr_tracks[hurr_tracks$storm_id == sample_storm, ] |>
+    create_full_track() |>
+    add_wind_radii()
+  # Last line has some missing values, so remove it for checks
+  sample_storm_params <- sample_storm_params[-nrow(sample_storm_params), ]
 
   # X1 will typically be between 200 km and 400 km, almost always between 0 km and 500 km
   expect_true(all(sample_storm_params$X1 > 0))
