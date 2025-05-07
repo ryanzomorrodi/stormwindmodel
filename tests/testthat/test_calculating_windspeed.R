@@ -1,8 +1,5 @@
-library(tidyverse)
-
 test_that("Wind speed estimates are reasonable for Hurricane Katrina", {
-  orleans_and_miami <- county_points %>%
-    filter(gridid %in% c("22071", "12086"))
+  orleans_and_miami <- county_points[county_points$gridid %in% c("22071", "12086"), ]
 
   katrina_wind <- calc_grid_winds(grid_df = orleans_and_miami,
                                    hurr_track = stormwindmodel::katrina_tracks)
@@ -31,11 +28,11 @@ test_that("Wind speed estimates are reasonable for Hurricane Katrina", {
 })
 
 test_that("Wind speed estimates are reasonable for Hurricane Michael", {
-  michael_track <- hurricaneexposuredata::hurr_tracks %>%
-    filter(storm_id == "Michael-2018")
+  michael_track <- hurricaneexposuredata::hurr_tracks[
+    hurricaneexposuredata::hurr_tracks$storm_id == "Michael-2018", 
+  ]
 
-  bay_county_location <- county_points %>%
-    filter(gridid == "12005")
+  bay_county_location <- county_points[county_points$gridid == "12005", ]
 
   bay_michael_wind <- calc_grid_winds(grid_df = bay_county_location,
                                        hurr_track = michael_track)
@@ -47,16 +44,21 @@ test_that("Wind speed estimates are reasonable for Hurricane Michael", {
   expect_true(bay_county_max >= 49.6)
 
   # County FIPS with winds over 64 knots (32.9 m/s) based on Best Tracks wind radii
-  highest_wind_locs <- hurricaneexposuredata::ext_tracks_wind %>%
-    filter(storm_id == "Michael-2018" & vmax_sust == 32.9216) %>%
-    pull(fips)
+  highest_wind_locs <- hurricaneexposuredata::ext_tracks_wind[
+    hurricaneexposuredata::ext_tracks_wind$storm_id == "Michael-2018" &
+      hurricaneexposuredata::ext_tracks_wind$vmax_sust == 32.9216,
+  ]$fips
 
-  michael_high_winds <- calc_grid_winds(hurr_track = michael_track,
-                                         grid_df = county_points %>%
-                                           filter(gridid %in% highest_wind_locs))
-  michael_high_winds_vmax <- apply(michael_high_winds[["vmax_sust"]],
-                                   MARGIN = 2, FUN = max, na.rm = TRUE) %>%
-    as.vector()
+  michael_high_winds <- calc_grid_winds(
+    hurr_track = michael_track,
+    grid_df = county_points[county_points$gridid %in% highest_wind_locs, ]
+  )
+  michael_high_winds_vmax <- as.vector(apply(
+    michael_high_winds[["vmax_sust"]],
+    MARGIN = 2, 
+    FUN = max, 
+    na.rm = TRUE
+  ))
 
   # Leave about 5 m/s variation room around the 32.9216 threshold from the wind radii
   expect_true(all(michael_high_winds_vmax > 28))
@@ -64,16 +66,21 @@ test_that("Wind speed estimates are reasonable for Hurricane Michael", {
 
   # County FIPS with winds between 50 knots (25.72 m/s) and 64 knots (32.9 m/s) based on
   # Best Tracks wind radii
-  mid_wind_locs <- hurricaneexposuredata::ext_tracks_wind %>%
-    filter(storm_id == "Michael-2018" & vmax_sust == 25.7200) %>%
-    pull(fips)
+  mid_wind_locs <- hurricaneexposuredata::ext_tracks_wind[
+    hurricaneexposuredata::ext_tracks_wind$storm_id == "Michael-2018" & 
+      hurricaneexposuredata::ext_tracks_wind$vmax_sust == 25.7200,
+  ]$fips
 
-  michael_mid_winds <- calc_grid_winds(hurr_track = michael_track,
-                                         grid_df = county_points %>%
-                                           filter(gridid %in% mid_wind_locs))
-  michael_mid_winds_vmax <- apply(michael_mid_winds[["vmax_sust"]],
-                                   MARGIN = 2, FUN = max, na.rm = TRUE) %>%
-    as.vector()
+  michael_mid_winds <- calc_grid_winds(
+    hurr_track = michael_track,
+    grid_df = county_points[county_points$gridid %in% mid_wind_locs, ]
+  )
+  michael_mid_winds_vmax <- as.vector(apply(
+    michael_mid_winds[["vmax_sust"]],
+    MARGIN = 2, 
+    FUN = max, 
+    na.rm = TRUE
+  ))
 
   # Allow some variation room around the 25.72 and 32.9216 thresholds
   # from the wind radii
@@ -84,16 +91,20 @@ test_that("Wind speed estimates are reasonable for Hurricane Michael", {
 
   # County FIPS with winds between 34 knots (17.4896 m/s) and 50 knots (25.72 m/s) based on
   # Best Tracks wind radii
-  low_wind_locs <- hurricaneexposuredata::ext_tracks_wind %>%
-    filter(storm_id == "Michael-2018" & vmax_sust == 17.4896) %>%
-    pull(fips)
-
-  michael_low_winds <- calc_grid_winds(hurr_track = michael_track,
-                                        grid_df = county_points %>%
-                                          filter(gridid %in% low_wind_locs))
-  michael_low_winds_vmax <- apply(michael_low_winds[["vmax_sust"]],
-                                  MARGIN = 2, FUN = max, na.rm = TRUE) %>%
-    as.vector()
+  low_wind_locs <- hurricaneexposuredata::ext_tracks_wind[
+    hurricaneexposuredata::ext_tracks_wind$storm_id == "Michael-2018" &
+      hurricaneexposuredata::ext_tracks_wind$vmax_sust == 17.4896,
+  ]$fips
+  michael_low_winds <- calc_grid_winds(
+    hurr_track = michael_track,
+    grid_df = county_points[county_points$gridid %in% low_wind_locs, ]
+  )
+  michael_low_winds_vmax <- as.vector(apply(
+    michael_low_winds[["vmax_sust"]],
+    MARGIN = 2, 
+    FUN = max, 
+    na.rm = TRUE
+  ))
 
   # Allow some variation room around the 25.72 upper threshold
   # from the wind radii
@@ -103,33 +114,26 @@ test_that("Wind speed estimates are reasonable for Hurricane Michael", {
 })
 
 test_that("Wind estimates agree with hand calculations", {
-  ex_counties <- county_points %>%
-    filter(gridid %in% c("22071", "22075", "22087", "22051", # Several counties in LA and MS
-                         "28045", "28047", "28059"))
+  ex_counties <- county_points[
+    county_points$gridid %in% c("22071", "22075", "22087", "22051", "28045", "28047", "28059"), 
+  ]
 
   ex_winds <- calc_grid_winds(hurr_track = stormwindmodel::katrina_tracks,
                                grid_df = ex_counties)
   ex_winds <- ex_winds[["vmax_sust"]]
-  ex_max_winds <- ex_winds %>%
-    as.data.frame() %>%
-    rownames_to_column(var = "date") %>%
-    filter(as.character(date) == "2005-08-29 11:15:00") %>%
-    select(-date) %>%
-    pivot_longer(everything(), names_to = "county_fips", values_to = "vmax_sust")
+  ex_max_winds <- as.data.frame(ex_winds)
+  ex_max_winds$date <- rownames(ex_max_winds)
+  rownames(ex_max_winds) <- NULL
 
-  expect_equal(ex_max_winds %>% filter(county_fips == 22071) %>% pull(vmax_sust) %>% round(),
-               30)
-  expect_equal(ex_max_winds %>% filter(county_fips == 22075) %>% pull(vmax_sust) %>% round(),
-               37)
-  expect_equal(ex_max_winds %>% filter(county_fips == 22087) %>% pull(vmax_sust) %>% round(),
-               32)
-  expect_equal(ex_max_winds %>% filter(county_fips == 22051) %>% pull(vmax_sust) %>% round(),
-               29)
-  expect_equal(ex_max_winds %>% filter(county_fips == 28045) %>% pull(vmax_sust) %>% round(),
-               26)
-  expect_equal(ex_max_winds %>% filter(county_fips == 28047) %>% pull(vmax_sust) %>% round(),
-               24)
-  expect_equal(ex_max_winds %>% filter(county_fips == 28059) %>% pull(vmax_sust) %>% round(),
-               22)
+  ex_max_winds <- ex_max_winds[
+    as.character(ex_max_winds$date) == "2005-08-29 11:15:00",
+  ]
+
+  expect_equal(round(ex_max_winds[["22075"]]), 37)
+  expect_equal(round(ex_max_winds[["22087"]]), 32)
+  expect_equal(round(ex_max_winds[["22051"]]), 29)
+  expect_equal(round(ex_max_winds[["28045"]]), 26)
+  expect_equal(round(ex_max_winds[["28047"]]), 24)
+  expect_equal(round(ex_max_winds[["28059"]]), 22)
 })
 
