@@ -63,9 +63,9 @@ Imports:
     tidyr (>= 1.1.2),
     weathermetrics (>= 1.2.2)
 LazyData: TRUE
-RoxygenNote: 7.1.2
+RoxygenNote: 7.3.2
 Depends:
-    R (>= 4.0)
+    R (>= 4.1)
 Suggests:
     ggthemes (>= 4.2.4),
     gridExtra (>= 2.3.0),
@@ -80,7 +80,9 @@ Suggests:
     tigris, 
     testthat (>= 3.0.2),
     viridis (>= 0.5.1), 
-    xml2
+    xml2,
+    metR (>= 0.16.0),
+    scales
 LinkingTo: 
     Rcpp, 
     testthat

@@ -201,6 +201,7 @@ modeled_wind_direction_sf <- dorian_modeled %>%
 
 
 library("metR")
+library(scales)
 ggplot() + 
   geom_sf(data = near_landfall) + 
   geom_sf(data = dorian_sf_line) + 
@@ -279,8 +280,10 @@ ggplot() +
             filter(date == ymd_h("2019-09-01 15")), 
             aes(x = glon, y = glat), size = 0.5) + 
   theme(panel.background = element_rect(fill = "lightblue"))  + 
-  coord_sf(xlim = c(-79, -76.5), ylim = c(25.5, 27.5)) + 
-  scale_mag(max_size = 0.5)
+  coord_sf(xlim = c(-79, -76.5), ylim = c(25.5, 27.5)) +
+  scale_mag(
+    rescaler = \(x, from) rescale(x, c(0, 0.5), c(0, max(x, na.rm = TRUE)))
+  )
 
 dorian_tracks_3 <- dorian_tracks %>% 
   mutate(date = ymd_hm(date)) %>% 
@@ -305,6 +308,8 @@ ggplot() +
             direction = "ccw") +
   theme(panel.background = element_rect(fill = "lightblue"))  + 
   coord_sf(xlim = c(-79, -76.5), ylim = c(25.5, 27.5)) + 
-  scale_mag(max_size = 0.5)
+  scale_mag(
+    rescaler = \(x, from) rescale(x, c(0, 0.5), c(0, max(x, na.rm = TRUE)))
+  )
 ```
 
