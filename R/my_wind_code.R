@@ -50,7 +50,7 @@
 #'
 #'
 #' @export
-add_wind_radii <- function(full_track = create_full_track()){
+add_wind_radii <- function(full_track = create_full_track()) {
   with_wind_radii <- full_track
 
   with_wind_radii$tcspd <- calc_forward_speed(
@@ -67,8 +67,10 @@ add_wind_radii <- function(full_track = create_full_track()){
     tclat_2 = c(with_wind_radii$tclat[-1], NA),
     tclon_2 = c(with_wind_radii$tclon[-1], NA)
   )
-  with_wind_radii$tcspd_u = with_wind_radii$tcspd * cos(degrees_to_radians(with_wind_radii$tcdir))
-  with_wind_radii$tcspd_v = with_wind_radii$tcspd * sin(degrees_to_radians(with_wind_radii$tcdir))
+  with_wind_radii$tcspd_u = with_wind_radii$tcspd *
+    cos(degrees_to_radians(with_wind_radii$tcdir))
+  with_wind_radii$tcspd_v = with_wind_radii$tcspd *
+    sin(degrees_to_radians(with_wind_radii$tcdir))
   with_wind_radii$vmax_sfc_sym = remove_forward_speed(
     vmax = with_wind_radii$vmax,
     tcspd = with_wind_radii$tcspd
@@ -88,20 +90,37 @@ add_wind_radii <- function(full_track = create_full_track()){
   with_wind_radii$n = will10b(with_wind_radii$vmax_gl, with_wind_radii$tclat)
   with_wind_radii$A = will10c(with_wind_radii$vmax_gl, with_wind_radii$tclat)
   with_wind_radii$eq3_right = will3_right(
-    with_wind_radii$n, 
+    with_wind_radii$n,
     with_wind_radii$A,
-    with_wind_radii$X1, 
+    with_wind_radii$X1,
     with_wind_radii$Rmax
   )
-  with_wind_radii$xi = mapply(solve_for_xi, eq3_right = with_wind_radii$eq3_right)
+  with_wind_radii$xi = mapply(
+    solve_for_xi,
+    eq3_right = with_wind_radii$eq3_right
+  )
   with_wind_radii$R1 = calc_R1(with_wind_radii$Rmax, with_wind_radii$xi)
   with_wind_radii$R2 = ifelse(
-    with_wind_radii$Rmax > 20, 
-    with_wind_radii$R1 + 25, 
+    with_wind_radii$Rmax > 20,
+    with_wind_radii$R1 + 25,
     with_wind_radii$R1 + 15
   )
-  with_wind_radii <- with_wind_radii[c("date", "tclat", "tclon", "tcdir", "tcspd_u", "tcspd_v", "vmax_gl", "Rmax", "X1", "n", "A", "R1", "R2")]
-  
+  with_wind_radii <- with_wind_radii[c(
+    "date",
+    "tclat",
+    "tclon",
+    "tcdir",
+    "tcspd_u",
+    "tcspd_v",
+    "vmax_gl",
+    "Rmax",
+    "X1",
+    "n",
+    "A",
+    "R1",
+    "R2"
+  )]
+
   return(with_wind_radii)
 }
 
@@ -157,25 +176,39 @@ add_wind_radii <- function(full_track = create_full_track()){
 #' continuous profiles. Monthly Weather Review 134(4):1102-1120.
 #'
 #' @export
-calc_grid_wind <- function(grid_point = stormwindmodel::county_points[1, ],
-                           with_wind_radii = add_wind_radii(),
-                           max_dist = 2222.4){   # 2222.4 km equals 1200 n. miles
+calc_grid_wind <- function(
+  grid_point = stormwindmodel::county_points[1, ],
+  with_wind_radii = add_wind_radii(),
+  max_dist = 2222.4
+) {
+  # 2222.4 km equals 1200 n. miles
 
-  grid_calc <- calc_grid_winds_cpp(glat = grid_point$glat, glon = grid_point$glon,
-                                                   glandsea = grid_point$glandsea, max_dist = max_dist,
-                                                   tclat = with_wind_radii$tclat, tclon = with_wind_radii$tclon,
-                                                   Rmax = with_wind_radii$Rmax, R1 = with_wind_radii$R2,
-                                                   R2 = with_wind_radii$R2, vmax_gl = with_wind_radii$vmax_gl,
-                                                   n = with_wind_radii$n, A = with_wind_radii$A,
-                                                   X1 = with_wind_radii$X1, tcspd_u = with_wind_radii$tcspd_u,
-                                                   tcspd_v = with_wind_radii$tcspd_v)
+  grid_calc <- calc_grid_winds_cpp(
+    glat = grid_point$glat,
+    glon = grid_point$glon,
+    glandsea = grid_point$glandsea,
+    max_dist = max_dist,
+    tclat = with_wind_radii$tclat,
+    tclon = with_wind_radii$tclon,
+    Rmax = with_wind_radii$Rmax,
+    R1 = with_wind_radii$R2,
+    R2 = with_wind_radii$R2,
+    vmax_gl = with_wind_radii$vmax_gl,
+    n = with_wind_radii$n,
+    A = with_wind_radii$A,
+    X1 = with_wind_radii$X1,
+    tcspd_u = with_wind_radii$tcspd_u,
+    tcspd_v = with_wind_radii$tcspd_v
+  )
 
-  grid_wind <- tibble::tibble(date = with_wind_radii$date,
-                      windspeed = grid_calc[["vmax_sust"]][ , 1],
-                      dist_from_storm = grid_calc[["distance_from_storm"]][ , 1],
-                      surface_wind_direction = grid_calc[["surface_wind_direction"]][ , 1])
+  grid_wind <- tibble::tibble(
+    date = with_wind_radii$date,
+    windspeed = grid_calc[["vmax_sust"]][, 1],
+    dist_from_storm = grid_calc[["distance_from_storm"]][, 1],
+    surface_wind_direction = grid_calc[["surface_wind_direction"]][, 1]
+  )
 
-        return(grid_wind)
+  return(grid_wind)
 }
 
 #' Determine hurricane winds at locations
@@ -236,21 +269,26 @@ calc_grid_wind <- function(grid_point = stormwindmodel::county_points[1, ],
 #'
 #'
 #' @export
-get_grid_winds <- function(hurr_track = stormwindmodel::floyd_tracks,
-                           grid_df = stormwindmodel::county_points,
-                           tint = 0.25,
-                           gust_duration_cut = 20,
-                           sust_duration_cut = 20,
-                           max_dist = 2222.4){
-
-  grid_winds <- calc_grid_winds(hurr_track = hurr_track,
-                                 grid_df = grid_df,
-                                 tint = tint,
-                                 max_dist = max_dist)
-  grid_winds_summary <- summarize_grid_winds(grid_winds = grid_winds$vmax_sust,
-                                             gust_duration_cut = gust_duration_cut,
-                                             sust_duration_cut = sust_duration_cut,
-                                             tint = tint)
+get_grid_winds <- function(
+  hurr_track = stormwindmodel::floyd_tracks,
+  grid_df = stormwindmodel::county_points,
+  tint = 0.25,
+  gust_duration_cut = 20,
+  sust_duration_cut = 20,
+  max_dist = 2222.4
+) {
+  grid_winds <- calc_grid_winds(
+    hurr_track = hurr_track,
+    grid_df = grid_df,
+    tint = tint,
+    max_dist = max_dist
+  )
+  grid_winds_summary <- summarize_grid_winds(
+    grid_winds = grid_winds$vmax_sust,
+    gust_duration_cut = gust_duration_cut,
+    sust_duration_cut = sust_duration_cut,
+    tint = tint
+  )
 
   return(grid_winds_summary)
 }
@@ -302,26 +340,69 @@ get_grid_winds <- function(hurr_track = stormwindmodel::floyd_tracks,
 #'
 #'
 #' @export
-calc_grid_winds <- function(hurr_track = stormwindmodel::floyd_tracks,
-                            grid_df = stormwindmodel::county_points,
-                            tint = 0.25,
-                            max_dist = 2222.4){
+calc_grid_winds <- function(
+  hurr_track = stormwindmodel::floyd_tracks,
+  grid_df = stormwindmodel::county_points,
+  tint = 0.25,
+  max_dist = 2222.4
+) {
+  if (
+    inherits(hurr_track, "sf") &
+      !("longitude" %in% names(hurr_track) | "latitude" %in% names(hurr_track))
+  ) {
+    coords <- as.data.frame(sf::st_coordinates(hurr_track))
+    names(coords) <- c("longitude", "latitude")
+    hurr_track <- cbind(
+      date = hurr_track$date,
+      coords,
+      wind = hurr_track$wind
+    )
+  }
+  if (
+    inherits(grid_df, "sf") &
+      !("glon" %in% names(grid_df) | "glat" %in% names(grid_df))
+  ) {
+    coords <- as.data.frame(sf::st_coordinates(grid_df))
+    names(coords) <- c("glon", "glat")
+    grid_df <- cbind(
+      gridid = grid_df$gridid,
+      coords,
+      glandsea = grid_df$glandsea
+    )
+  }
+  hurr_track$wind <- as.numeric(units::set_units(
+    hurr_track$wind,
+    "knots",
+    mode = "standard"
+  ))
 
   full_track <- create_full_track(hurr_track = hurr_track, tint = tint)
   with_wind_radii <- add_wind_radii(full_track = full_track)
 
-  grid_winds <- calc_grid_winds_cpp(glat = grid_df$glat, glon = grid_df$glon,
-                                    glandsea = grid_df$glandsea, max_dist =  max_dist,
-                                    tclat = with_wind_radii$tclat, tclon = with_wind_radii$tclon,
-                                    Rmax = with_wind_radii$Rmax, R1 = with_wind_radii$R1,
-                                    R2 = with_wind_radii$R2, vmax_gl = with_wind_radii$vmax_gl,
-                                    n = with_wind_radii$n, A = with_wind_radii$A, X1 = with_wind_radii$X1,
-                                    tcspd_u = with_wind_radii$tcspd_u, tcspd_v = with_wind_radii$tcspd_v)
+  grid_winds <- calc_grid_winds_cpp(
+    glat = grid_df$glat,
+    glon = grid_df$glon,
+    glandsea = grid_df$glandsea,
+    max_dist = max_dist,
+    tclat = with_wind_radii$tclat,
+    tclon = with_wind_radii$tclon,
+    Rmax = with_wind_radii$Rmax,
+    R1 = with_wind_radii$R1,
+    R2 = with_wind_radii$R2,
+    vmax_gl = with_wind_radii$vmax_gl,
+    n = with_wind_radii$n,
+    A = with_wind_radii$A,
+    X1 = with_wind_radii$X1,
+    tcspd_u = with_wind_radii$tcspd_u,
+    tcspd_v = with_wind_radii$tcspd_v
+  )
 
   colnames(grid_winds[[1]]) <- as.character(grid_df$gridid)
   rownames(grid_winds[[1]]) <- format(with_wind_radii$date, "%Y-%m-%d %H:%M:%S")
+  grid_winds[[1]] <- units::set_units(grid_winds[[1]], "knots")
   colnames(grid_winds[[2]]) <- as.character(grid_df$gridid)
   rownames(grid_winds[[2]]) <- format(with_wind_radii$date, "%Y-%m-%d %H:%M:%S")
+  grid_winds[[2]] <- units::set_units(grid_winds[[2]], "km")
   colnames(grid_winds[[3]]) <- as.character(grid_df$gridid)
   rownames(grid_winds[[3]]) <- format(with_wind_radii$date, "%Y-%m-%d %H:%M:%S")
 
@@ -359,34 +440,41 @@ calc_grid_winds <- function(hurr_track = stormwindmodel::floyd_tracks,
 #'    }
 #'
 #' @export
-summarize_grid_winds <- function(grid_winds,
-                                 gust_duration_cut = 20,
-                                 sust_duration_cut = 20,
-                                 tint = 0.25){
-
-  calc_sust_dur <- function(wind){
+summarize_grid_winds <- function(
+  grid_winds,
+  gust_duration_cut = 20,
+  sust_duration_cut = 20,
+  tint = 0.25
+) {
+  calc_sust_dur <- function(wind) {
     60 * tint * sum(wind > sust_duration_cut, na.rm = TRUE)
   }
 
-  calc_gust_dur <- function(wind){
+  calc_gust_dur <- function(wind) {
     60 * tint * sum((wind * 1.49) > gust_duration_cut, na.rm = TRUE)
   }
 
-  grid_wind_summary <- tibble::tibble(gridid = colnames(grid_winds),
-                                     date_time_max_wind = rownames(grid_winds)[apply(grid_winds, MARGIN = 2, FUN = which.max)],
-                                     vmax_sust = apply(grid_winds, MARGIN = 2, FUN = max, na.rm = TRUE),
-                                     vmax_gust = .data$vmax_sust * 1.49,
-                                     sust_dur = apply(grid_winds, MARGIN = 2, FUN = calc_sust_dur),
-                                     gust_dur = apply(grid_winds, MARGIN = 2, FUN = calc_gust_dur)
-                                     )
+  grid_wind_summary <- tibble::tibble(
+    gridid = colnames(grid_winds),
+    date_time_max_wind = rownames(grid_winds)[apply(
+      grid_winds,
+      MARGIN = 2,
+      FUN = which.max
+    )],
+    vmax_sust = apply(grid_winds, MARGIN = 2, FUN = max, na.rm = TRUE),
+    vmax_gust = .data$vmax_sust * 1.49,
+    sust_dur = apply(grid_winds, MARGIN = 2, FUN = calc_sust_dur),
+    gust_dur = apply(grid_winds, MARGIN = 2, FUN = calc_gust_dur)
+  )
   grid_wind_summary$date_time_max_wind <- ifelse(
-    grid_wind_summary$vmax_sust == 0, 
-    NA, 
+    grid_wind_summary$vmax_sust == 0,
+    NA,
     grid_wind_summary$date_time_max_wind
   )
-  grid_wind_summary$date_time_max_wind <- as.POSIXct(grid_wind_summary$date_time_max_wind, format = "%Y%m%d%H%M")
+  grid_wind_summary$date_time_max_wind <- as.POSIXct(
+    grid_wind_summary$date_time_max_wind,
+    format = "%Y%m%d%H%M"
+  )
 
   return(grid_wind_summary)
 }
-
-

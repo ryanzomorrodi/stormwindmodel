@@ -59,7 +59,8 @@ Imports:
     rlang (>= 0.4.10),
     Rcpp,
     tibble,
-    units
+    units,
+    sf
 LazyData: TRUE
 RoxygenNote: 7.3.2
 Depends:
@@ -71,12 +72,11 @@ Suggests:
     dplyr (>= 1.0.4),
     tidyr (>= 1.1.2),
     lubridate (>= 1.7.9),
-    sf (>= 0.9.7),
     rnaturalearth,
     rnaturalearthdata,
-    tigris, 
+    tigris,
     gridExtra (>= 2.3.0),
-    viridis (>= 0.5.1), 
+    viridis (>= 0.5.1),
     metR (>= 0.16.0),
     scales,
     mapproj (>= 1.2.7)
