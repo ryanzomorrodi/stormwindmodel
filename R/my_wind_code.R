@@ -399,7 +399,7 @@ calc_grid_winds <- function(
 
   colnames(grid_winds[[1]]) <- as.character(grid_df$gridid)
   rownames(grid_winds[[1]]) <- format(with_wind_radii$date, "%Y-%m-%d %H:%M:%S")
-  grid_winds[[1]] <- units::set_units(grid_winds[[1]], "knots")
+  grid_winds[[1]] <- units::set_units(grid_winds[[1]], "m/s")
   colnames(grid_winds[[2]]) <- as.character(grid_df$gridid)
   rownames(grid_winds[[2]]) <- format(with_wind_radii$date, "%Y-%m-%d %H:%M:%S")
   grid_winds[[2]] <- units::set_units(grid_winds[[2]], "km")
